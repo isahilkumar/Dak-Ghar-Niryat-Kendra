@@ -1,0 +1,66 @@
+@model DakGharNiryatKendra.Models.ExportConsignment
+@{
+    ViewData["Title"] = "Induction Receipt";
+    var barcodeSvg = ViewBag.BarcodeSvg as string;
+}
+
+<div class="container px-lg-4 py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 text-center">
+            <div class="p-4 bg-white rounded-4 border shadow-sm">
+                <div class="emblem-box mx-auto mb-3" style="width: 64px; height: 64px; font-size: 2rem; background: #dcfce7; color: #15803d;">
+                    <i class="bi bi-check-lg"></i>
+                </div>
+                <h1 class="h3 fw-bold text-success mb-1">Article Successfully Inducted!</h1>
+                <p class="text-muted small mb-4">The article has been verified, weighed, and staged into the export holding bag.</p>
+
+                <!-- Receipt Slip Card -->
+                <div class="p-4 bg-light rounded-3 border text-start mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <span class="badge bg-dark font-monospace fs-6">@Model.TrackingNumber</span>
+                        <span class="badge bg-success">Inducted & Verified</span>
+                    </div>
+
+                    <div class="barcode-container mb-3 text-center">
+                        @Html.Raw(barcodeSvg)
+                    </div>
+
+                    <div class="row g-2 small">
+                        <div class="col-6">
+                            <span class="text-muted d-block">Induction Kendra:</span>
+                            <span class="fw-bold text-dark">@(Model.DnkCenter?.CenterName)</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block">Recipient Country:</span>
+                            <span class="fw-bold text-dark">@Model.RecipientCountry</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block">Verified Weight:</span>
+                            <span class="fw-bold text-danger">@((Model.VerifiedWeightKg ?? Model.ActualWeightKg).ToString("F2")) Kg</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted d-block">Induction Timestamp:</span>
+                            <span class="fw-bold text-dark">@DateTime.UtcNow.ToString("dd MMM yyyy, hh:mm tt")</span>
+                        </div>
+                        <div class="col-12 border-top pt-2">
+                            <span class="text-muted d-block">Accepted By Postal Assistant:</span>
+                            <span class="fw-bold text-dark">@(Model.InductedByStaffName ?? "Ramesh Sharma")</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 justify-content-center">
+                    <a asp-controller="PostalStaff" asp-action="Induction" class="btn btn-dnk-saffron">
+                        <i class="bi bi-upc-scan me-1"></i> Scan Next Article
+                    </a>
+                    <a asp-controller="PostalStaff" asp-action="CreateManifest" class="btn btn-outline-dark">
+                        <i class="bi bi-bag-check me-1"></i> Proceed to Bagging Manifest
+                    </a>
+                    <a asp-controller="PostalStaff" asp-action="Dashboard" class="btn btn-outline-secondary">
+                        Counter Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,63 @@
+@model List<DakGharNiryatKendra.Models.HsCodeDirectory>
+@{
+    ViewData["Title"] = "Harmonized System (HS) Code Directory";
+    var search = ViewBag.SearchTerm as string;
+}
+
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <h1 class="h4 fw-bold text-dark mb-1">Harmonized System (HS) Code Export Directory</h1>
+            <p class="text-muted small mb-0">Standard export classification, GST rates, and RoDTEP export incentive benefits</p>
+        </div>
+    </div>
+
+    <!-- Search Box -->
+    <div class="dnk-card p-3 mb-4">
+        <form method="get" asp-controller="Admin" asp-action="HsCodes" class="row g-2">
+            <div class="col-md-9">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" value="@search" class="form-control" placeholder="Search by 6-digit HS Code, Commodity description, or Product category..." />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-dnk-primary w-100">Search Directory</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- HS Codes Table -->
+    <div class="dnk-card p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle small mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>HS Code</th>
+                        <th>Commodity Description</th>
+                        <th>Category & Chapter</th>
+                        <th>GST Rate</th>
+                        <th>RoDTEP Benefit</th>
+                        <th>Required Export Compliance Documents</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var h in Model)
+                    {
+                        <tr>
+                            <td class="font-monospace fw-bold text-danger fs-6">@h.HsCode</td>
+                            <td class="fw-semibold text-dark">@h.Description</td>
+                            <td>
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary">@h.Category</span>
+                                <div class="text-muted" style="font-size: 0.72rem;">@h.Chapter</div>
+                            </td>
+                            <td>@h.StandardGstPercent%</td>
+                            <td><span class="badge bg-success bg-opacity-10 text-success fw-bold">+@h.RodtepRatePercent%</span></td>
+                            <td class="text-muted">@(h.RequiredDocuments ?? "Standard Commercial Invoice, Packing List")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

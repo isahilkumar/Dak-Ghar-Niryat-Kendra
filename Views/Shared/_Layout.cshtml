@@ -1,0 +1,365 @@
+@using DakGharNiryatKendra.Services
+@inject IAuthService AuthService
+@{
+    var currentUser = await AuthService.GetCurrentUserAsync();
+    var currentRole = currentUser?.Role ?? DakGharNiryatKendra.Models.UserRole.Exporter;
+    var controllerName = ViewContext.RouteData.Values["controller"]?.ToString() ?? "Home";
+    var actionName = ViewContext.RouteData.Values["action"]?.ToString() ?? "Index";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Dak Ghar Niryat Kendra | India Post Export Portal</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5.3.3 CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    
+    <!-- Custom Design System Stylesheet -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- Clean Official Government Accent Bar -->
+    <div class="tricolor-stripe no-print"></div>
+
+    <!-- Clean Persona Switcher Bar -->
+    <div class="persona-bar no-print">
+        <div class="container-fluid px-lg-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2 small">
+                    <span class="badge bg-danger text-white"><i class="bi bi-shield-check"></i> OFFICIAL PORTAL</span>
+                    <span class="text-secondary d-none d-md-inline">Department of Posts, Ministry of Communications, Govt. of India</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Language Selection Modal Trigger -->
+                    <button type="button" class="btn btn-sm btn-outline-light d-flex align-items-center gap-1 px-2 py-1" style="font-size: 0.78rem; border-color: rgba(255,255,255,0.3);" data-bs-toggle="modal" data-bs-target="#languageSelectModal" onclick="openLanguageModal()" title="Change Language / भाषा बदलें">
+                        <i class="bi bi-translate text-warning"></i>
+                        <span id="activeLangBadge" class="fw-bold">English / हिन्दी</span>
+                    </button>
+                    <div class="vr bg-secondary opacity-50 d-none d-sm-block my-1"></div>
+                    <span class="text-secondary small d-none d-sm-inline" data-i18n="demo_role">Demo Role:</span>
+                    <div class="btn-group btn-group-sm">
+                        <a href="/Account/SwitchUser?username=exporter1" class="persona-switch-btn @(currentRole == DakGharNiryatKendra.Models.UserRole.Exporter ? "active" : "")">
+                            <i class="bi bi-shop me-1"></i><span data-i18n="nav_exporter">Exporter</span>
+                        </a>
+                        <a href="/Account/SwitchUser?username=postal_staff" class="persona-switch-btn @(currentRole == DakGharNiryatKendra.Models.UserRole.PostalStaff ? "active" : "")">
+                            <i class="bi bi-envelope-paper me-1"></i><span data-i18n="nav_staff">DNK Staff</span>
+                        </a>
+                        <a href="/Account/SwitchUser?username=customs_officer" class="persona-switch-btn @(currentRole == DakGharNiryatKendra.Models.UserRole.CustomsOfficer ? "active" : "")">
+                            <i class="bi bi-shield-check me-1"></i><span data-i18n="nav_customs">Customs</span>
+                        </a>
+                        <a href="/Account/SwitchUser?username=admin" class="persona-switch-btn @(currentRole == DakGharNiryatKendra.Models.UserRole.Admin ? "active" : "")">
+                            <i class="bi bi-gear me-1"></i><span data-i18n="nav_admin">Admin</span>
+                        </a>
+                    </div>
+                    <div class="vr bg-secondary opacity-50 d-none d-md-block my-1"></div>
+                    <div class="d-none d-md-flex align-items-center gap-1">
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-sm btn-outline-light persona-bar-auth-btn" style="border-color: rgba(255,255,255,0.25);">
+                            <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+                        </a>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-sm btn-danger persona-bar-auth-btn">
+                            <i class="bi bi-person-plus-fill me-1"></i>Register
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clean Main Navigation Bar -->
+    <header class="sticky-top no-print">
+        <nav class="navbar navbar-expand-lg navbar-dnk">
+            <div class="container-fluid px-lg-4">
+                <a class="navbar-brand-logo" asp-controller="Home" asp-action="Index">
+                    <img src="/images/dak_ghar_logo.svg" alt="Dak Ghar Niryat Kendra Emblem" class="navbar-logo-img" />
+                    <div>
+                        <span class="brand-text-main">Dak Ghar Niryat Kendra</span>
+                        <span class="brand-text-sub d-block">India Post Export Portal</span>
+                    </div>
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dnk @(controllerName == "Home" && actionName == "Index" ? "active" : "")" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-house-door me-1"></i> <span data-i18n="nav_home">Home</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dnk @(controllerName == "Exporter" && actionName == "Book" ? "active text-danger fw-bold" : "")" asp-controller="Exporter" asp-action="Book">
+                                <i class="bi bi-plus-circle-fill me-1 text-danger"></i> <span data-i18n="nav_book">Book Export</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dnk @(controllerName == "Tracking" ? "active" : "")" asp-controller="Tracking" asp-action="Index">
+                                <i class="bi bi-search me-1"></i> <span data-i18n="nav_track">Track Article</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dnk @(controllerName == "Home" && actionName == "Calculator" ? "active" : "")" asp-controller="Home" asp-action="Calculator">
+                                <i class="bi bi-calculator me-1"></i> <span data-i18n="nav_calculator">Postage Calculator</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-dnk @(controllerName == "Home" && actionName == "Locator" ? "active" : "")" asp-controller="Home" asp-action="Locator">
+                                <i class="bi bi-pin-map me-1"></i> <span data-i18n="nav_locator">Find Kendra</span>
+                            </a>
+                        </li>
+
+                        <!-- Clean Role Portal Links -->
+                        @if (currentRole == DakGharNiryatKendra.Models.UserRole.Exporter)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link nav-link-dnk dropdown-toggle @(controllerName == "Exporter" || (controllerName == "Account" && actionName == "Welcome") ? "active text-danger" : "")" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-badge me-1"></i> <span data-i18n="nav_exporter_desk">Exporter Desk</span>
+                                </a>
+                                <ul class="dropdown-menu shadow border-0">
+                                    <li><a class="dropdown-item py-2" href="/User/Welcome"><i class="bi bi-house text-danger me-2"></i> <span data-i18n="nav_exporter_welcome">Exporter Welcome Hub</span></a></li>
+                                    <li><a class="dropdown-item py-2 fw-semibold" asp-controller="Exporter" asp-action="Dashboard"><i class="bi bi-speedometer2 me-2"></i> <span data-i18n="nav_dashboard">Dashboard</span></a></li>
+                                    <li><a class="dropdown-item py-2 text-danger fw-semibold" asp-controller="Exporter" asp-action="Book"><i class="bi bi-plus-circle me-2"></i> <span data-i18n="nav_book_pbe">Book New e-PBE</span></a></li>
+                                    <li><a class="dropdown-item py-2" asp-controller="Exporter" asp-action="Shipments"><i class="bi bi-box-seam me-2"></i> <span data-i18n="nav_my_shipments">My Shipments &amp; Labels</span></a></li>
+                                </ul>
+                            </li>
+                        }
+                        else if (currentRole == DakGharNiryatKendra.Models.UserRole.PostalStaff)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link nav-link-dnk dropdown-toggle active text-warning" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-envelope-paper me-1"></i> <span data-i18n="nav_counter_portal">Counter Portal</span>
+                                </a>
+                                <ul class="dropdown-menu shadow border-0">
+                                    <li><a class="dropdown-item py-2" href="/PostalStaff/Welcome"><i class="bi bi-house me-2"></i> Staff Welcome Hub</a></li>
+                                    <li><a class="dropdown-item py-2" asp-controller="PostalStaff" asp-action="Dashboard"><i class="bi bi-speedometer2 me-2"></i> Counter Dashboard</a></li>
+                                    <li><a class="dropdown-item py-2 fw-bold text-danger" asp-controller="PostalStaff" asp-action="Induction"><i class="bi bi-upc-scan me-2"></i> Induction Scanner</a></li>
+                                    <li><a class="dropdown-item py-2" asp-controller="PostalStaff" asp-action="CreateManifest"><i class="bi bi-bag-check me-2"></i> FPO Bagging</a></li>
+                                </ul>
+                            </li>
+                        }
+                        else if (currentRole == DakGharNiryatKendra.Models.UserRole.CustomsOfficer)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-dnk active text-primary fw-bold" asp-controller="Customs" asp-action="Dashboard">
+                                    <i class="bi bi-shield-check me-1"></i> <span data-i18n="nav_customs_portal">Customs Portal</span>
+                                </a>
+                            </li>
+                        }
+                        else if (currentRole == DakGharNiryatKendra.Models.UserRole.Admin)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link nav-link-dnk dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-kanban me-1"></i> <span data-i18n="nav_admin_portal">Admin Portal</span>
+                                </a>
+                                <ul class="dropdown-menu shadow border-0">
+                                    <li><a class="dropdown-item py-2" href="/Admin/Welcome"><i class="bi bi-house me-2"></i> Admin Welcome Hub</a></li>
+                                    <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="Dashboard"><i class="bi bi-graph-up me-2"></i> Analytics Dashboard</a></li>
+                                    <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="Kendras"><i class="bi bi-geo me-2"></i> Kendra Directory</a></li>
+                                    <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="Exporters"><i class="bi bi-people me-2"></i> MSME Exporters</a></li>
+                                    <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="Tariffs"><i class="bi bi-table me-2"></i> Tariff Schedules</a></li>
+                                    <li><a class="dropdown-item py-2" asp-controller="Admin" asp-action="HsCodes"><i class="bi bi-tags me-2"></i> HS Code Directory</a></li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <a asp-controller="Exporter" asp-action="Book" class="btn btn-dnk-primary btn-sm">
+                            <i class="bi bi-plus-lg"></i> <span data-i18n="btn_book_epbe">Book e-PBE</span>
+                        </a>
+                        
+                        <!-- Rich User Profile Dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="user-avatar-badge">@(currentUser?.FullName?.Length > 0 ? currentUser.FullName.Substring(0, 1) : "U")</span>
+                                <span class="d-none d-sm-inline fw-semibold">@(currentUser?.FullName?.Split(' ')[0] ?? "User")</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2 rounded-3" style="min-width: 260px;">
+                                <li class="px-3 py-2 bg-light rounded-3 mb-2">
+                                    <div class="fw-bold text-dark text-truncate">@currentUser?.FullName</div>
+                                    <div class="small text-muted text-truncate">@currentUser?.Email</div>
+                                    <div class="d-flex align-items-center gap-1 mt-1">
+                                        <span class="badge bg-danger">@currentUser?.Role</span>
+                                        @if (currentUser?.IsVerified == true)
+                                        {
+                                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Verified</span>
+                                        }
+                                    </div>
+                                </li>
+                                <li><a class="dropdown-item py-2" href="/User/Welcome"><i class="bi bi-house text-danger me-2"></i> Welcome Hub</a></li>
+                                <li>
+                                    <a class="dropdown-item py-2" href="@(currentRole switch {
+                                        DakGharNiryatKendra.Models.UserRole.Exporter => "/Exporter/Dashboard",
+                                        DakGharNiryatKendra.Models.UserRole.PostalStaff => "/PostalStaff/Dashboard",
+                                        DakGharNiryatKendra.Models.UserRole.CustomsOfficer => "/Customs/Dashboard",
+                                        DakGharNiryatKendra.Models.UserRole.Admin => "/Admin/Dashboard",
+                                        _ => "/"
+                                    })"><i class="bi bi-speedometer2 text-primary me-2"></i> Role Dashboard</a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item py-2" asp-controller="Account" asp-action="Login"><i class="bi bi-box-arrow-in-right text-success me-2"></i> Sign In / Switch Account</a></li>
+                                <li><a class="dropdown-item py-2" asp-controller="Account" asp-action="Register"><i class="bi bi-person-plus text-warning me-2"></i> Register New MSME</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item py-2 text-danger" asp-controller="Account" asp-action="Logout"><i class="bi bi-box-arrow-right me-2"></i> Sign Out</a></li>
+                            </ul>
+                        </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Global Alert / Notification Toast Banner -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show m-3 shadow-sm border-0 d-flex align-items-center gap-2" role="alert">
+            <i class="bi bi-check-circle-fill fs-5 text-success"></i>
+            <div>@TempData["SuccessMessage"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show m-3 shadow-sm border-0 d-flex align-items-center gap-2" role="alert">
+            <i class="bi bi-exclamation-triangle-fill fs-5 text-danger"></i>
+            <div>@TempData["ErrorMessage"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["WarningMessage"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show m-3 shadow-sm border-0 d-flex align-items-center gap-2" role="alert">
+            <i class="bi bi-info-circle-fill fs-5 text-warning"></i>
+            <div>@TempData["WarningMessage"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Main Page Content -->
+    <main role="main" class="flex-grow-1">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-dnk no-print">
+        <div class="container px-lg-4">
+            <div class="row g-4 mb-4">
+                <div class="col-lg-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img src="/images/dak_ghar_logo.svg" alt="Dak Ghar Niryat Kendra" class="bg-white p-1 rounded-3" style="width:48px; height:48px; object-fit:contain;" />
+                        <div>
+                            <span class="fs-5 fw-bold text-white d-block">Dak Ghar Niryat Kendra</span>
+                            <span class="text-secondary small" style="font-size:0.75rem;">Department of Posts &bull; Govt. of India</span>
+                        </div>
+                    </div>
+                    <p class="text-secondary small leading-relaxed">
+                        A flagship digital export initiative by the Department of Posts, Ministry of Communications, Government of India, empowering local artisans, MSMEs, weavers, and self-help groups to access international markets smoothly.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <span class="badge bg-dark border border-secondary text-secondary"><i class="bi bi-lock me-1 text-warning"></i>256-Bit SSL Encrypted</span>
+                        <span class="badge bg-dark border border-secondary text-secondary"><i class="bi bi-globe me-1 text-info"></i>UPU S10 Standard</span>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="text-white fw-bold mb-3">Export Services</h6>
+                    <a href="/Home/Calculator?country=US" class="footer-link">International EMS</a>
+                    <a href="/Home/Calculator?country=GB" class="footer-link">Air Parcel Service</a>
+                    <a href="/Home/Calculator?country=AE" class="footer-link">ITPS for E-Commerce</a>
+                    <a href="/Home/Calculator?country=DE" class="footer-link">Tracked Small Packets</a>
+                    <a href="/Exporter/Book" class="footer-link">File e-PBE Online</a>
+                </div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="text-white fw-bold mb-3">Quick Links</h6>
+                    <a href="/Tracking" class="footer-link">Track Article (UPU S10)</a>
+                    <a href="/Home/Locator" class="footer-link">Locate DNK Kendra</a>
+                    <a href="/Home/Calculator" class="footer-link">Rate & Transit Estimator</a>
+                    <a href="/Home/Guidelines" class="footer-link">Customs Guidelines</a>
+                    <a href="/Home/About" class="footer-link">About DNK Scheme</a>
+                </div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="text-white fw-bold mb-3">Portals</h6>
+                    <a href="/Account/SwitchUser?username=exporter1" class="footer-link">MSME Exporter Portal</a>
+                    <a href="/Account/SwitchUser?username=postal_staff" class="footer-link">Nodal Officer Counter</a>
+                    <a href="/Account/SwitchUser?username=customs_officer" class="footer-link">Customs Scrutiny Wing</a>
+                    <a href="/Account/SwitchUser?username=admin" class="footer-link">Directorate Analytics</a>
+                    <a href="/Account/Login" class="footer-link">Persona Switcher</a>
+                </div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="text-white fw-bold mb-3">Support & Nodal</h6>
+                    <p class="text-secondary small mb-1"><i class="bi bi-telephone text-danger me-2"></i>Toll Free: 1800-266-6868</p>
+                    <p class="text-secondary small mb-1"><i class="bi bi-envelope text-warning me-2"></i>dnk.support@indiapost.gov.in</p>
+                    <p class="text-secondary small"><i class="bi bi-building text-info me-2"></i>Dak Bhawan, Sansad Marg, New Delhi 110001</p>
+                </div>
+            </div>
+
+            <div class="border-top border-secondary pt-3 mt-3 d-flex justify-content-between align-items-center flex-wrap gap-2 text-secondary small">
+                <div>
+                    &copy; @DateTime.UtcNow.Year Department of Posts (India Post), Ministry of Communications. All Rights Reserved.
+                </div>
+                <div class="d-flex gap-3">
+                    <a href="/Home/Guidelines" class="text-secondary text-decoration-none">Terms of Service</a>
+                    <a href="/Home/Guidelines" class="text-secondary text-decoration-none">Privacy Policy</a>
+                    <a href="/Home/Guidelines" class="text-secondary text-decoration-none">Customs Act 1962 (Sec 84)</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Official India Post Language Selection Modal (As requested) -->
+    <div class="modal fade" id="languageSelectModal" tabindex="-1" aria-labelledby="languageSelectModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden position-relative" style="background: #ffffff;">
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close" onclick="dismissLanguageModal()"></button>
+                
+                <div class="modal-body text-center p-4 pt-5">
+                    <h3 class="fw-bold text-dark mb-1" id="languageSelectModalLabel">
+                        Welcome / स्वागत है
+                    </h3>
+                    <p class="text-muted small mb-4">
+                        Please select your preferred language / कृपया भाषा चुनें
+                    </p>
+
+                    <div class="row g-3 justify-content-center">
+                        <!-- Option 1: English -->
+                        <div class="col-6">
+                            <button type="button" class="lang-modal-card lang-card-en w-100" id="btnLangEn" data-bs-dismiss="modal" onclick="selectLanguage('en')">
+                                <div class="lang-card-letter">A</div>
+                                <div class="lang-card-label">English</div>
+                            </button>
+                        </div>
+
+                        <!-- Option 2: Hindi -->
+                        <div class="col-6">
+                            <button type="button" class="lang-modal-card lang-card-hi w-100" id="btnLangHi" data-bs-dismiss="modal" onclick="selectLanguage('hi')">
+                                <div class="lang-card-letter">अ</div>
+                                <div class="lang-card-label">हिन्दी (Hindi)</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Application JS -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

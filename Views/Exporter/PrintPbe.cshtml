@@ -1,0 +1,166 @@
+@model DakGharNiryatKendra.Models.ExportConsignment
+@{
+    Layout = null;
+    var qrBase64 = ViewBag.QrCodeBase64 as string;
+    var barcodeSvg = ViewBag.BarcodeSvg as string;
+    var pbeBarcodeSvg = ViewBag.PbeBarcodeSvg as string;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Postal Bill of Export - @Model.PbeNumber</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; color: #000; background: #f8fafc; padding: 20px; font-size: 13px; }
+        .pbe-paper { background: #fff; max-width: 850px; margin: 0 auto; padding: 25px; border: 2px solid #000; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .header-emblem { text-align: center; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 14px; }
+        .table-pbe td, .table-pbe th { border: 1px solid #000; padding: 5px 8px; }
+        .section-hdr { background: #f1f5f9; font-weight: bold; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; }
+        @@media print {
+            body { background: #fff; padding: 0; }
+            .pbe-paper { border: 2px solid #000; box-shadow: none; max-width: 100%; margin: 0; padding: 15px; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="text-center mb-3 no-print">
+        <button onclick="window.print()" class="btn btn-danger btn-sm px-4 fw-bold shadow-sm">
+            &#128438; Print / Download Official PBE Form
+        </button>
+        <button onclick="window.close()" class="btn btn-outline-secondary btn-sm ms-2">Close</button>
+    </div>
+
+    <div class="pbe-paper">
+        <!-- Official Header -->
+        <div class="header-emblem d-flex align-items-center justify-content-center gap-3">
+            <img src="/images/dak_ghar_logo.svg" alt="Dak Ghar Logo" style="width: 55px; height: 55px; object-fit: contain;" />
+            <div class="text-center">
+                <h5 class="fw-bold mb-0 text-uppercase">Government of India &bull; Ministry of Communications</h5>
+                <h6 class="fw-bold mb-1 text-uppercase">Department of Posts &bull; Central Board of Indirect Taxes & Customs</h6>
+                <h4 class="fw-bold text-danger text-uppercase mb-0">POSTAL BILL OF EXPORT (@(Model.PbeType == DakGharNiryatKendra.Models.PbeType.PBE_I ? "PBE - I" : "PBE - II"))</h4>
+                <div class="small fw-semibold">[Under Section 84 of Customs Act, 1962 and Postal Export Rules, 2018]</div>
+            </div>
+        </div>
+
+        <div class="row align-items-center mb-3">
+            <div class="col-8">
+                <div><strong>PBE Number:</strong> <span class="font-monospace fs-6 fw-bold">@Model.PbeNumber</span></div>
+                <div><strong>Filing Date & Time:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")</div>
+                <div><strong>Induction DNK Kendra:</strong> @(Model.DnkCenter?.CenterName ?? "New Delhi GPO DNK") (@(Model.DnkCenter?.CenterCode))</div>
+                <div><strong>Nature of Export:</strong> @Model.NatureOfExport</div>
+            </div>
+            <div class="col-4 text-end">
+                @if (!string.IsNullOrEmpty(qrBase64))
+                {
+                    <img src="@qrBase64" alt="QR" style="width: 80px; height: 80px;" class="border p-1" />
+                }
+            </div>
+        </div>
+
+        <!-- Exporter and Consignee Information -->
+        <table class="table table-pbe mb-3 w-100">
+            <tr>
+                <td style="width: 50%;" class="align-top">
+                    <div class="section-hdr p-1 mb-1">1. Exporter (Sender) Details</div>
+                    <div><strong>Name:</strong> @(Model.Exporter?.BusinessName ?? Model.Exporter?.FullName)</div>
+                    <div><strong>Address:</strong> @(Model.Exporter?.Address), @(Model.Exporter?.City), @(Model.Exporter?.State) - @(Model.Exporter?.Pincode)</div>
+                    <div><strong>IEC No:</strong> <span class="font-monospace fw-bold">@(Model.Exporter?.IecNumber)</span></div>
+                    <div><strong>GSTIN:</strong> <span class="font-monospace">@(Model.Exporter?.Gstin)</span></div>
+                    <div><strong>LUT No:</strong> <span class="font-monospace">@(Model.LutNumber ?? "N/A")</span></div>
+                    <div><strong>AD Code / Bank:</strong> <span class="font-monospace">@(Model.Exporter?.AdCode ?? "N/A")</span></div>
+                </td>
+                <td style="width: 50%;" class="align-top">
+                    <div class="section-hdr p-1 mb-1">2. Consignee (Overseas Recipient) Details</div>
+                    <div><strong>Name:</strong> @Model.RecipientName</div>
+                    @if (!string.IsNullOrEmpty(Model.RecipientCompany))
+                    {
+                        <div><strong>Company:</strong> @Model.RecipientCompany</div>
+                    }
+                    <div><strong>Address:</strong> @Model.RecipientAddress, @Model.RecipientCity, @Model.RecipientState</div>
+                    <div><strong>ZIP / Postal Code:</strong> @Model.RecipientPostalCode</div>
+                    <div><strong>Country of Destination:</strong> <strong>@Model.RecipientCountry (@Model.DestinationCountryCode)</strong></div>
+                    <div><strong>Contact Phone:</strong> @Model.RecipientPhone</div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Postal Service and Article S10 Details -->
+        <table class="table table-pbe mb-3 w-100">
+            <tr class="section-hdr">
+                <th>Article / Tracking No</th>
+                <th>Service Type</th>
+                <th>Gross Wt (Kg)</th>
+                <th>Volumetric Wt (Kg)</th>
+                <th>Invoice No & Date</th>
+            </tr>
+            <tr>
+                <td class="font-monospace fw-bold fs-6">@Model.TrackingNumber</td>
+                <td>@Model.ServiceType.ToString().Replace('_', ' ')</td>
+                <td>@Model.ActualWeightKg.ToString("F2") Kg</td>
+                <td>@Model.VolumetricWeightKg.ToString("F2") Kg</td>
+                <td>@Model.InvoiceNumber (@(Model.InvoiceDate?.ToString("dd/MM/yyyy") ?? DateTime.Today.ToString("dd/MM/yyyy")))</td>
+            </tr>
+        </table>
+
+        <!-- Line Items Table -->
+        <div class="section-hdr p-1 mb-1">3. Itemized Goods & Harmonized System (HS) Classification</div>
+        <table class="table table-pbe mb-3 w-100">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 4%;">#</th>
+                    <th style="width: 38%;">Description of Export Goods</th>
+                    <th style="width: 14%;">HS Code</th>
+                    <th style="width: 10%;">Qty & Unit</th>
+                    <th style="width: 14%;">Unit Price (INR)</th>
+                    <th style="width: 10%;">Net Wt (Kg)</th>
+                    <th style="width: 10%;" class="text-end">Total FOB (INR)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int sNo = 1; }
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@(sNo++)</td>
+                        <td>@item.ItemDescription</td>
+                        <td class="font-monospace">@item.HsCode</td>
+                        <td>@item.Quantity @item.UnitOfMeasurement</td>
+                        <td>@item.UnitPriceINR.ToString("N2")</td>
+                        <td>@item.NetWeightKg.ToString("F2")</td>
+                        <td class="text-end">@item.TotalPriceINR.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot class="fw-bold">
+                <tr>
+                    <td colspan="6" class="text-end">Total Declared FOB Value (INR):</td>
+                    <td class="text-end">₹ @Model.DeclaredValueINR.ToString("N2")</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- Statutory Declaration and Signatures -->
+        <div class="border p-2 mb-3 small" style="background:#fff;">
+            <strong>Exporter Declaration:</strong>
+            I/We hereby declare that the particulars given above are true and complete. I/We confirm that the consignment contains no letter of communication, currency notes, antique artifacts, or any prohibited/restricted articles specified in the Customs Act 1962 or UPU regulations.
+        </div>
+
+        <div class="row pt-4 text-center">
+            <div class="col-4">
+                <div class="border-top pt-1 small fw-bold">Signature / e-Sign of Exporter</div>
+                <div class="text-muted" style="font-size: 11px;">@(Model.Exporter?.FullName)</div>
+            </div>
+            <div class="col-4">
+                <div class="border-top pt-1 small fw-bold">Postal Officer Stamp & Signature</div>
+                <div class="text-muted" style="font-size: 11px;">Dak Ghar Niryat Kendra</div>
+            </div>
+            <div class="col-4">
+                <div class="border-top pt-1 small fw-bold">Customs Appraiser Out of Charge</div>
+                <div class="text-muted" style="font-size: 11px;">Foreign Post Office (FPO)</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

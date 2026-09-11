@@ -1,0 +1,113 @@
+@model List<DakGharNiryatKendra.Models.DnkCenter>
+@{
+    ViewData["Title"] = "Find Nearest Dak Ghar Niryat Kendra (DNK)";
+    var states = ViewBag.States as List<string> ?? new List<string>();
+    var currentSearch = ViewBag.SearchTerm as string;
+    var selectedState = ViewBag.SelectedState as string;
+}
+
+<div class="container px-lg-4 py-5">
+    <div class="text-center mb-5">
+        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-1 rounded-pill fw-bold">Pan-India Postal Network</span>
+        <h1 class="display-6 fw-bold text-dark mt-2">Find a Dak Ghar Niryat Kendra (DNK)</h1>
+        <p class="text-muted mx-auto" style="max-width: 680px;">
+            Search our nationwide network of specialized export post offices equipped with dedicated PBE verification counters, packaging facilitation, and customs nodal assistance.
+        </p>
+    </div>
+
+    <!-- Search & Filter Controls Card -->
+    <div class="dnk-card p-4 mb-4">
+        <form method="get" asp-controller="Home" asp-action="Locator" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label fw-semibold small text-dark">Search by City, Pincode or Kendra Name</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" value="@currentSearch" class="form-control" placeholder="e.g. Jaipur, 110001, GPO, Connaught Place..." />
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-semibold small text-dark">Filter by State / UT</label>
+                <select name="state" class="form-select">
+                    <option value="">-- All States & UTs --</option>
+                    @foreach (var s in states)
+                    {
+                        <option value="@s" selected="@(s.Equals(selectedState, StringComparison.OrdinalIgnoreCase) ? "selected" : null)">@s</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-dnk-primary flex-grow-1">
+                        <i class="bi bi-filter"></i> Search Kendra
+                    </button>
+                    <a asp-controller="Home" asp-action="Locator" class="btn btn-outline-secondary" title="Reset filter">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Kendra Grid -->
+    <div class="row g-4">
+        @if (Model.Count == 0)
+        {
+            <div class="col-12 text-center py-5">
+                <div class="text-muted fs-1 mb-2"><i class="bi bi-geo-alt"></i></div>
+                <h4 class="fw-bold text-dark">No DNK Kendra found matching criteria</h4>
+                <p class="text-muted">Try clearing your search query or selecting another State.</p>
+                <a asp-controller="Home" asp-action="Locator" class="btn btn-outline-danger btn-sm">Reset Search Filters</a>
+            </div>
+        }
+        else
+        {
+            @foreach (var center in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="dnk-card h-100 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-dark font-monospace">@center.CenterCode</span>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                                <i class="bi bi-check-circle-fill me-1"></i> Active Desk
+                            </span>
+                        </div>
+
+                        <h3 class="h5 fw-bold text-dark mb-2">@center.CenterName</h3>
+                        <p class="text-muted small mb-3 flex-grow-1">
+                            <i class="bi bi-geo-alt text-danger me-1"></i>@center.Address, @center.City, @center.State - <strong>@center.Pincode</strong>
+                        </p>
+
+                        <div class="p-3 bg-light rounded-3 border mb-3 small">
+                            <div class="mb-1"><i class="bi bi-clock text-warning me-2"></i><strong>Hours:</strong> @center.OperatingHours</div>
+                            <div class="mb-1"><i class="bi bi-person-badge text-primary me-2"></i><strong>Nodal:</strong> @center.ContactPerson</div>
+                            <div><i class="bi bi-telephone text-success me-2"></i><strong>Phone:</strong> @center.Phone</div>
+                        </div>
+
+                        <!-- Amenities Badges -->
+                        <div class="d-flex flex-wrap gap-1 mb-3">
+                            @if (center.HasCustomsDesk)
+                            {
+                                <span class="badge bg-primary bg-opacity-10 text-primary small"><i class="bi bi-shield-check me-1"></i>Customs Appraising</span>
+                            }
+                            @if (center.HasPackagingFacility)
+                            {
+                                <span class="badge bg-warning bg-opacity-10 text-dark small"><i class="bi bi-box-seam me-1"></i>Packaging Counter</span>
+                            }
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <a href="https://maps.google.com/?q=@center.Latitude,@center.Longitude" target="_blank" class="btn btn-sm btn-outline-danger flex-grow-1">
+                                <i class="bi bi-map me-1"></i> View on Map
+                            </a>
+                            <a asp-controller="Exporter" asp-action="Book" class="btn btn-sm btn-dnk-primary">
+                                Select for Export
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

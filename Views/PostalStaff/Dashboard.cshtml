@@ -1,0 +1,233 @@
+@model DakGharNiryatKendra.Models.ViewModels.PostalStaffDashboardViewModel
+@{
+    ViewData["Title"] = "Dak Ghar Niryat Kendra - Nodal Officer Counter";
+    var staff = Model.StaffUser;
+    var center = Model.DnkCenter;
+}
+
+<div class="container-fluid px-lg-4 py-4">
+    <!-- Top Counter Banner -->
+    <div class="p-4 rounded-4 bg-white border shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="emblem-box" style="width: 54px; height: 54px; font-size: 1.5rem; background: linear-gradient(135deg, #F57C00 0%, #D97706 100%);">
+                    <i class="bi bi-building"></i>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center gap-2">
+                        <h1 class="h4 fw-bold text-dark mb-0">@center.CenterName</h1>
+                        <span class="badge bg-warning text-dark font-monospace">@center.CenterCode</span>
+                    </div>
+                    <div class="text-muted small mt-1">
+                        <strong>Nodal Officer:</strong> @staff.FullName | 
+                        <strong>Pincode:</strong> @center.Pincode | 
+                        <strong>Desk Status:</strong> <span class="text-success fw-bold"><i class="bi bi-circle-fill" style="font-size: 8px;"></i> Online & Inducting</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <a asp-controller="PostalStaff" asp-action="Induction" class="btn btn-dnk-saffron btn-lg">
+                    <i class="bi bi-upc-scan me-1"></i> Open Counter Induction Scanner
+                </a>
+                <a asp-controller="PostalStaff" asp-action="CreateManifest" class="btn btn-outline-dark btn-lg">
+                    <i class="bi bi-bag-check me-1"></i> FPO Dispatch Manifest
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="dnk-card p-3 border-start border-4 border-warning">
+                <div class="text-muted small fw-semibold text-uppercase">Inducted Today</div>
+                <div class="fs-2 fw-bold text-dark brand-font mt-1">@Model.TodayInductions</div>
+                <div class="text-muted small">Articles verified at counter</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="dnk-card p-3 border-start border-4 border-danger">
+                <div class="text-muted small fw-semibold text-uppercase">Pending Induction Drop-offs</div>
+                <div class="fs-2 fw-bold text-danger brand-font mt-1">@Model.PendingInductions</div>
+                <div class="text-muted small">Awaiting merchant drop-off</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="dnk-card p-3 border-start border-4 border-primary">
+                <div class="text-muted small fw-semibold text-uppercase">Ready for FPO Bagging</div>
+                <div class="fs-2 fw-bold text-primary brand-font mt-1">@Model.ReadyForDispatchCount</div>
+                <div class="text-muted small">Staged in export holding bay</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="dnk-card p-3 border-start border-4 border-success">
+                <div class="text-muted small fw-semibold text-uppercase">Active Pickup Tasks</div>
+                <div class="fs-2 fw-bold text-success brand-font mt-1">@Model.ActivePickupsCount</div>
+                <div class="text-muted small">Assigned to Speed Post postmen</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Induction Queue Table -->
+        <div class="col-lg-8">
+            <div class="dnk-card p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-inbox text-danger"></i> Consignments Awaiting Counter Acceptance
+                    </h2>
+                    <a asp-controller="PostalStaff" asp-action="Induction" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-upc-scan me-1"></i> Scan Barcode
+                    </a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle small mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Article S10</th>
+                                <th>Exporter Name</th>
+                                <th>Destination</th>
+                                <th>Declared Wt</th>
+                                <th>PBE Number</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.PendingInductionList.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center py-4 text-muted">
+                                        All booked articles have been inducted. No pending drop-offs.
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var c in Model.PendingInductionList)
+                            {
+                                <tr>
+                                    <td class="font-monospace fw-bold text-danger">@c.TrackingNumber</td>
+                                    <td>
+                                        <div class="fw-semibold">@(c.Exporter?.BusinessName ?? c.Exporter?.FullName)</div>
+                                        <div class="text-muted" style="font-size: 0.72rem;">IEC: @(c.Exporter?.IecNumber)</div>
+                                    </td>
+                                    <td>@c.RecipientCountry</td>
+                                    <td>@c.ActualWeightKg.ToString("F2") Kg</td>
+                                    <td><span class="badge bg-light text-dark border font-monospace">@c.PbeNumber</span></td>
+                                    <td class="text-end">
+                                        <a asp-controller="PostalStaff" asp-action="Induction" asp-route-trackingNumber="@c.TrackingNumber" class="btn btn-sm btn-dnk-saffron">
+                                            <i class="bi bi-upc-scan me-1"></i> Induct
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Dispatch Manifests -->
+            <div class="dnk-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-truck text-primary"></i> Recent Foreign Post Office (FPO) Dispatch Manifests
+                    </h2>
+                    <a asp-controller="PostalStaff" asp-action="CreateManifest" class="btn btn-sm btn-outline-primary">
+                        + New Bag Manifest
+                    </a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle small mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Manifest Number</th>
+                                <th>Bag Barcode</th>
+                                <th>Destination FPO</th>
+                                <th>Articles</th>
+                                <th>Total Weight</th>
+                                <th>Status</th>
+                                <th class="text-end">Print</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.RecentManifests.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center py-3 text-muted">No manifests generated yet.</td>
+                                </tr>
+                            }
+                            @foreach (var m in Model.RecentManifests)
+                            {
+                                <tr>
+                                    <td class="font-monospace fw-bold text-dark">@m.ManifestNumber</td>
+                                    <td class="font-monospace text-danger">@m.BagBarcodeNumber</td>
+                                    <td>@m.DestinationFpo</td>
+                                    <td><span class="badge bg-secondary">@m.TotalArticles Articles</span></td>
+                                    <td>@m.TotalWeightKg.ToString("F2") Kg</td>
+                                    <td><span class="badge bg-success">@m.Status</span></td>
+                                    <td class="text-end">
+                                        <a asp-controller="PostalStaff" asp-action="PrintManifest" asp-route-id="@m.Id" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-printer"></i> Manifest
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doorstep Pickups Management Column -->
+        <div class="col-lg-4">
+            <div class="dnk-card p-4">
+                <h3 class="h6 fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-truck text-warning"></i> Active Doorstep Pickup Dispatch
+                </h3>
+
+                @if (Model.TodayPickups.Count == 0)
+                {
+                    <div class="p-3 bg-light rounded text-center small text-muted">
+                        No pending pickup requests assigned for today.
+                    </div>
+                }
+                @foreach (var p in Model.TodayPickups)
+                {
+                    <div class="p-3 bg-light rounded-3 border mb-3 small">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="badge bg-dark font-monospace">@p.ExportConsignment?.TrackingNumber</span>
+                            <span class="badge bg-warning text-dark">@p.Status</span>
+                        </div>
+                        <div class="fw-bold text-dark mb-1">@(p.Exporter?.BusinessName ?? p.Exporter?.FullName)</div>
+                        <div class="text-muted mb-2"><i class="bi bi-geo-alt me-1 text-danger"></i>@p.PickupAddress</div>
+
+                        @if (p.Status == DakGharNiryatKendra.Models.PickupStatus.Requested)
+                        {
+                            <form asp-controller="PostalStaff" asp-action="AssignPickup" method="post" class="mt-2 pt-2 border-top">
+                                <input type="hidden" name="pickupId" value="@p.Id" />
+                                <div class="input-group input-group-sm mb-1">
+                                    <input type="text" name="postmanName" value="K. Manoj Kumar (Postman)" class="form-control" placeholder="Postman Name" required />
+                                    <input type="text" name="postmanPhone" value="+91 94460 11223" class="form-control" placeholder="Phone" required />
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-warning w-100 fw-bold">
+                                    <i class="bi bi-person-check me-1"></i> Assign Postman
+                                </button>
+                            </form>
+                        }
+                        else if (p.Status == DakGharNiryatKendra.Models.PickupStatus.Assigned)
+                        {
+                            <div class="text-secondary mb-2"><i class="bi bi-person me-1"></i>Assigned to: <strong>@p.AssignedPostmanName</strong> (@p.AssignedPostmanPhone)</div>
+                            <form asp-controller="PostalStaff" asp-action="CompletePickup" method="post">
+                                <input type="hidden" name="pickupId" value="@p.Id" />
+                                <button type="submit" class="btn btn-sm btn-success w-100 fw-bold">
+                                    <i class="bi bi-check2-circle me-1"></i> Mark Collected & Induct
+                                </button>
+                            </form>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

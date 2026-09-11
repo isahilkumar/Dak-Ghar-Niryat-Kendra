@@ -1,0 +1,1225 @@
+@{
+    ViewData["Title"] = "Dak Ghar Niryat Kendra | India Post Export Portal";
+    var featuredCenters = ViewBag.FeaturedCenters as List<DnkCenter> ?? new List<DnkCenter>();
+    var topDestinations = ViewBag.TopDestinations as IEnumerable<dynamic> ?? new List<dynamic>();
+    var popularHsCodes = ViewBag.PopularHsCodes as List<HsCodeDirectory> ?? new List<HsCodeDirectory>();
+    decimal totalVal = 0m;
+    if (ViewBag.TotalValueINR != null)
+    {
+        decimal.TryParse(ViewBag.TotalValueINR.ToString(), out totalVal);
+    }
+}
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 1. PREMIUM DARK HERO BANNER                                            -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section class="hero-pro">
+    <div class="hero-pro-bg"></div>
+    <div class="hero-pro-overlay"></div>
+    <div class="container px-lg-4 position-relative" style="z-index:2;">
+        <div class="row align-items-center g-5">
+            <!-- Left Column: Hero Text -->
+            <div class="col-lg-6">
+                <div class="hero-pro-badge reveal-on-scroll">
+                    <img src="/images/dak_ghar_logo.svg" alt="Dak Ghar Logo" style="width: 26px; height: 26px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));" />
+                    <span class="hero-pro-badge-dot"></span>
+                    <span data-i18n="hero_ministry">Department of Posts • Govt. of India</span>
+                </div>
+
+                <h1 class="hero-pro-title reveal-on-scroll delay-1">
+                    <span data-i18n="hero_title_1">Export Worldwide from Your Local</span>
+                    <span class="hero-pro-highlight" data-i18n="hero_title_2">Dak Ghar</span>
+                </h1>
+
+                <p class="hero-pro-desc reveal-on-scroll delay-2" data-i18n="hero_desc">
+                    The Dak Ghar Niryat Kendra (DNK) platform empowers Indian MSMEs, artisans, weavers, and e-commerce exporters to ship globally with 100% paperless e-PBE filing, zero-rated IGST, automated customs clearance, and doorstep pickup.
+                </p>
+
+                <div class="d-flex gap-3 flex-wrap mb-4 reveal-on-scroll delay-3">
+                    <a asp-controller="Exporter" asp-action="Book" class="btn btn-hero-primary btn-lg px-4 shadow-lg">
+                        <i class="bi bi-plus-circle me-1"></i> <span data-i18n="btn_book_export">Book Export (e-PBE)</span>
+                    </a>
+                    <a asp-controller="Tracking" asp-action="Index" class="btn btn-hero-outline btn-lg px-4">
+                        <i class="bi bi-search me-1"></i> <span data-i18n="btn_track_article">Track Article</span>
+                    </a>
+                    <a asp-controller="Home" asp-action="Calculator" class="btn btn-hero-outline btn-lg px-3" title="Tariff Calculator">
+                        <i class="bi bi-calculator"></i>
+                    </a>
+                </div>
+
+                <!-- Trust Badges -->
+                <div class="d-flex align-items-center gap-2 flex-wrap reveal-on-scroll delay-4">
+                    <div class="hero-trust-badge">
+                        <i class="bi bi-check-circle-fill text-success"></i> <span data-i18n="badge_igst">Zero-Rated IGST</span>
+                    </div>
+                    <div class="hero-trust-badge">
+                        <i class="bi bi-upc text-warning"></i> <span data-i18n="badge_upu">UPU S10 Barcode</span>
+                    </div>
+                    <div class="hero-trust-badge">
+                        <i class="bi bi-globe text-info"></i> <span data-i18n="badge_countries">210+ Countries</span>
+                    </div>
+                    <div class="hero-trust-badge">
+                        <i class="bi bi-truck text-danger"></i> <span data-i18n="badge_pickup">Doorstep Pickup</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Live Radar Tracking Card & Quick Rate Estimator -->
+            <div class="col-lg-6 reveal-on-scroll delay-2">
+                <div class="hero-glass-card">
+                    <div class="hero-glass-card-glow"></div>
+
+                    <!-- Tab Header -->
+                    <div class="hero-tab-nav" role="tablist">
+                        <button class="hero-tab-btn active" id="track-tab" type="button" onclick="switchHeroTab('track')">
+                            <i class="bi bi-radar me-1"></i> <span data-i18n="tab_track">Track Consignment</span>
+                        </button>
+                        <button class="hero-tab-btn" id="rate-tab" type="button" onclick="switchHeroTab('rate')">
+                            <i class="bi bi-calculator me-1"></i> <span data-i18n="tab_rate">Quick Rate Check</span>
+                        </button>
+                    </div>
+
+                    <div class="tab-content">
+                        <!-- TAB 1: Tracking -->
+                        <div class="tab-pane fade show active" id="tab-track" role="tabpanel">
+                            <!-- Live Executive Logistics Radar HUD Banner -->
+                            <div class="radar-flight-banner mb-3 position-relative overflow-hidden">
+                                <!-- Subtle Radar Background Glow -->
+                                <div class="radar-sweep-bg"></div>
+
+                                <!-- Header Row: Live Status & Network Indicator -->
+                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-white border-opacity-10 position-relative" style="z-index:2;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="live-status-pill">
+                                            <span class="waypoint-pulse"></span>
+                                            <span class="fw-bold tracking-wider">LIVE TRACKING ACTIVE</span>
+                                        </span>
+                                        <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-30 small" style="font-size:0.68rem;">
+                                            <i class="bi bi-shield-check me-1"></i>OOC Cleared
+                                        </span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-1 text-white-50 small" style="font-size:0.72rem;">
+                                        <i class="bi bi-globe2 text-info me-1"></i>
+                                        <span>UPU Network</span>
+                                    </div>
+                                </div>
+
+                                <!-- Waypoint Nodes & Flight Path Simulation -->
+                                <div class="position-relative py-2 my-1" style="z-index:2;">
+                                    <div class="d-flex justify-content-between align-items-center text-white small mb-1">
+                                        <div>
+                                            <div class="fw-bold text-white d-flex align-items-center gap-1" style="font-size:0.8rem;">
+                                                <span>🇮🇳</span> <span>DELHI FPO</span>
+                                            </div>
+                                            <div class="text-white-50" style="font-size:0.66rem;">Inducted • 10:45 AM</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="badge bg-primary bg-opacity-20 text-info border border-info border-opacity-30" style="font-size:0.65rem;">
+                                                <i class="bi bi-airplane-fill me-1"></i>IN TRANSIT
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="fw-bold text-white d-flex align-items-center gap-1 justify-content-end" style="font-size:0.8rem;">
+                                                <span>🇺🇸</span> <span>NEW YORK JFK</span>
+                                            </div>
+                                            <div class="text-white-50" style="font-size:0.66rem;">Est. Arrival: Sep 14</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Flight Progress Line with Moving Glowing Aircraft -->
+                                    <div class="flight-track-line">
+                                        <div class="flight-track-progress" id="heroRadarProgress"></div>
+                                        <div class="flight-track-plane" id="heroRadarPlane">
+                                            <i class="bi bi-airplane-fill"></i>
+                                        </div>
+                                        <!-- Intermediate Waypoint Ring -->
+                                        <div class="flight-waypoint-mid"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Article Metadata Strip -->
+                                <div class="d-flex justify-content-between align-items-center pt-2 border-top border-white border-opacity-10 position-relative" style="z-index:2; font-size:0.72rem;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="mono-font fw-bold text-warning" id="heroRadarArticleNo">EM892104928IN</span>
+                                        <span class="text-white-50">•</span>
+                                        <span class="text-white-50" id="heroRadarService">EMS Speed Post</span>
+                                    </div>
+                                    <div class="text-white-50">
+                                        <span class="badge bg-secondary bg-opacity-30 text-white border border-secondary border-opacity-30" style="font-size:0.65rem;">2.4 Kg</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h5 class="fw-bold text-white mb-1" data-i18n="track_title">Track Your Export Article</h5>
+                            <p class="text-white-50 small mb-3" data-i18n="track_desc">Enter your 13-digit UPU S10 Barcode tracking number.</p>
+
+                            <form asp-controller="Tracking" asp-action="Track" method="post" class="mb-3">
+                                <div class="hero-track-input-group">
+                                    <input type="text" name="trackingNumber" id="simpleTrackingInput" class="hero-track-input mono-font text-uppercase" placeholder="e.g. EM892104928IN" required />
+                                    <button class="btn btn-dnk-primary px-4 shadow-sm" type="submit">
+                                        <i class="bi bi-arrow-right me-1"></i> <span data-i18n="btn_track">Track</span>
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="pt-2 border-top border-secondary border-opacity-25">
+                                <div class="text-white-50 small mb-2 fw-semibold" data-i18n="sample_consignments">Try sample live consignments:</div>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button type="button" class="btn btn-sm hero-sample-pill" onclick="fillTrack('EM892104928IN')">
+                                        <span class="badge bg-danger me-1">US</span> EM892104928IN
+                                    </button>
+                                    <button type="button" class="btn btn-sm hero-sample-pill" onclick="fillTrack('LP928410293IN')">
+                                        <span class="badge bg-success me-1">AE</span> LP928410293IN
+                                    </button>
+                                    <button type="button" class="btn btn-sm hero-sample-pill" onclick="fillTrack('CP771209384IN')">
+                                        <span class="badge bg-warning text-dark me-1">GB</span> CP771209384IN
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 2: Quick Rate Estimator -->
+                        <div class="tab-pane fade" id="tab-rate" role="tabpanel">
+                            <h5 class="fw-bold text-white mb-1" data-i18n="rate_title">Postage &amp; Transit Estimator</h5>
+                            <p class="text-white-50 small mb-3" data-i18n="rate_desc">Instant calculation for major international destinations.</p>
+
+                            <div class="row g-2 mb-3">
+                                <div class="col-7">
+                                    <label class="form-label small fw-bold text-white-50 mb-1" data-i18n="dest_country">Destination Country</label>
+                                    <select id="quickCountry" class="form-select hero-dark-select" onchange="calculateQuickRates()">
+                                        <option value="IN">🇮🇳 India</option>
+                                        <option value="US" selected>🇺🇸 United States</option>
+                                        <option value="GB">🇬🇧 United Kingdom</option>
+                                        <option value="AE">🇦🇪 United Arab Emirates</option>
+                                        <option value="DE">🇩🇪 Germany</option>
+                                        <option value="AU">🇦🇺 Australia</option>
+                                        <option value="CA">🇨🇦 Canada</option>
+                                        <option value="SG">🇸🇬 Singapore</option>
+                                        <option value="OTH">🌐 Others (Rest of the World)</option>
+                                    </select>
+                                </div>
+                                <div class="col-5">
+                                    <label class="form-label small fw-bold text-white-50 mb-1" data-i18n="weight_kg">Weight (Kg)</label>
+                                    <input type="number" id="quickWeight" class="form-control hero-dark-input fw-bold" value="1.0" min="0.1" max="20" step="0.5" oninput="calculateQuickRates()" />
+                                </div>
+                            </div>
+
+                            <div class="p-3 hero-dark-calc-box rounded-3 border border-secondary border-opacity-25 mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <span class="badge bg-danger me-1" data-i18n="ems_name">EMS Speed Post</span>
+                                        <span class="text-white-50 small" data-i18n="ems_transit">3-7 Days</span>
+                                    </div>
+                                    <span class="fw-bold text-danger fs-5" id="quickEmsPrice">₹ 1,770.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center border-top border-secondary border-opacity-25 pt-2">
+                                    <div>
+                                        <span class="badge bg-warning text-dark me-1" data-i18n="parcel_name">Air Parcel</span>
+                                        <span class="text-white-50 small" data-i18n="parcel_transit">6-10 Days</span>
+                                    </div>
+                                    <span class="fw-bold text-white" id="quickParcelPrice">₹ 1,327.50</span>
+                                </div>
+                            </div>
+
+                            <a asp-controller="Home" asp-action="Calculator" class="btn btn-outline-light btn-sm w-100 fw-semibold">
+                                <i class="bi bi-sliders me-1"></i> <span data-i18n="btn_advanced_calc">Open Advanced Tariff Calculator</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 2. ANIMATED KEY STATS COUNTER BAR                                      -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section class="stats-pro-bar">
+    <div class="container px-lg-4">
+        <div class="row g-0">
+            <div class="col-6 col-md-3 stats-pro-item reveal-on-scroll">
+                <div class="stats-pro-icon stats-pro-icon-red"><i class="bi bi-geo-alt-fill"></i></div>
+                <div>
+                    <div class="stats-pro-number stat-counter" data-target="@(ViewBag.TotalCenters ?? 8)">0</div>
+                    <div class="stats-pro-label" data-i18n="stat_kendras">DNK Export Kendras</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 stats-pro-item reveal-on-scroll delay-1">
+                <div class="stats-pro-icon stats-pro-icon-blue"><i class="bi bi-people-fill"></i></div>
+                <div>
+                    <div class="stats-pro-number stat-counter" data-target="@(ViewBag.TotalExporters ?? 12)">0</div>
+                    <div class="stats-pro-label" data-i18n="stat_exporters">Registered Exporters</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 stats-pro-item reveal-on-scroll delay-2">
+                <div class="stats-pro-icon stats-pro-icon-gold"><i class="bi bi-box-seam-fill"></i></div>
+                <div>
+                    <div class="stats-pro-number stat-counter" data-target="@(ViewBag.TotalConsignments ?? 5)">0</div>
+                    <div class="stats-pro-label" data-i18n="stat_shipments">Dispatched Shipments</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 stats-pro-item reveal-on-scroll delay-3">
+                <div class="stats-pro-icon stats-pro-icon-green"><i class="bi bi-globe-americas"></i></div>
+                <div>
+                    <div class="stats-pro-number">210<span class="text-danger">+</span></div>
+                    <div class="stats-pro-label" data-i18n="stat_destinations">Global Destinations</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 3. HOW IT WORKS — PREMIUM 3-STEP VISUAL ROADMAP                        -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section class="py-5 bg-white border-bottom position-relative">
+    <div class="container px-lg-4">
+        <div class="text-center mb-5 reveal-on-scroll">
+            <span class="hero-pro-badge d-inline-flex mb-2" style="font-size:0.75rem; background: #fff5f5; color: #dc2626; border-color: #fecaca;">
+                <span class="hero-pro-badge-dot"></span>
+                <span data-i18n="steps_badge">Easy 3-Step Process</span>
+            </span>
+            <h2 class="fw-bold text-dark mt-2" style="font-size:2.2rem;" data-i18n="steps_title">How to Export with Dak Ghar Niryat Kendra</h2>
+            <p class="text-muted mx-auto" style="max-width: 580px;" data-i18n="steps_desc">
+                Exporting your goods internationally is straightforward with our digital postal system.
+            </p>
+        </div>
+
+        <div class="row g-4 position-relative">
+            <!-- Step 1 -->
+            <div class="col-md-4 reveal-on-scroll delay-1">
+                <div class="step-pro-card">
+                    <div class="step-pro-number step-pro-num-1">1</div>
+                    <div class="step-pro-icon-wrap step-icon-red">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                    <h4 class="h5 fw-bold text-dark mb-2" data-i18n="step1_title">Book e-PBE Online</h4>
+                    <p class="text-muted small mb-0" data-i18n="step1_desc">
+                        Fill in recipient address, package weight, and goods description. The system generates your electronic Postal Bill of Export and printable S10 barcode label.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="col-md-4 reveal-on-scroll delay-2">
+                <div class="step-pro-card">
+                    <div class="step-pro-number step-pro-num-2">2</div>
+                    <div class="step-pro-icon-wrap step-icon-gold">
+                        <i class="bi bi-truck"></i>
+                    </div>
+                    <h4 class="h5 fw-bold text-dark mb-2" data-i18n="step2_title">Drop Off or Request Pickup</h4>
+                    <p class="text-muted small mb-0" data-i18n="step2_desc">
+                        Hand over your parcel at any designated Dak Ghar Niryat Kendra counter, or schedule a doorstep pickup by your local postman.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="col-md-4 reveal-on-scroll delay-3">
+                <div class="step-pro-card">
+                    <div class="step-pro-number step-pro-num-3">3</div>
+                    <div class="step-pro-icon-wrap step-icon-green">
+                        <i class="bi bi-globe2"></i>
+                    </div>
+                    <h4 class="h5 fw-bold text-dark mb-2" data-i18n="step3_title">Customs &amp; Global Delivery</h4>
+                    <p class="text-muted small mb-0" data-i18n="step3_desc">
+                        Parcels are electronically cleared through Customs at Foreign Post Offices (FPO) and dispatched via international air mail to 210+ countries.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 4. ROLE-BASED STAKEHOLDER PORTALS                                      -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section class="py-5 bg-light border-bottom">
+    <div class="container px-lg-4">
+        <div class="text-center mb-5 reveal-on-scroll">
+            <h2 class="fw-bold text-dark" style="font-size:2.2rem;" data-i18n="portals_title">Dedicated Stakeholder Portals</h2>
+            <p class="text-muted" data-i18n="portals_desc">Direct access for exporters, postal staff, customs appraisers, and administrators</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- 1. Exporter -->
+            <div class="col-md-6 col-lg-3 reveal-on-scroll delay-1">
+                <div class="portal-pro-card tilt-card">
+                    <div class="portal-pro-icon-wrap portal-icon-red">
+                        <i class="bi bi-shop"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1" data-i18n="portal_exporter_title">MSME Exporters</h5>
+                    <span class="badge bg-danger bg-opacity-10 text-danger small mb-3 align-self-start" data-i18n="portal_exporter_badge">Self Service</span>
+                    <p class="text-muted small mb-4 flex-grow-1" data-i18n="portal_exporter_desc">
+                        Book e-PBE export shipments, print barcodes, view duty drawback, and manage bookings.
+                    </p>
+                    <a href="/Account/SwitchUser?username=exporter1" class="btn btn-outline-danger w-100 fw-semibold portal-pro-btn">
+                        <i class="bi bi-arrow-right-circle me-1"></i> <span data-i18n="portal_exporter_btn">Exporter Desk</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 2. Staff -->
+            <div class="col-md-6 col-lg-3 reveal-on-scroll delay-2">
+                <div class="portal-pro-card tilt-card">
+                    <div class="portal-pro-icon-wrap portal-icon-gold">
+                        <i class="bi bi-envelope-paper"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1" data-i18n="portal_staff_title">DNK Counter Staff</h5>
+                    <span class="badge bg-warning bg-opacity-10 text-dark small mb-3 align-self-start" data-i18n="portal_staff_badge">Postal Operations</span>
+                    <p class="text-muted small mb-4 flex-grow-1" data-i18n="portal_staff_desc">
+                        Weigh parcels, scan barcodes at counter induction, and generate FPO dispatch bags.
+                    </p>
+                    <a href="/Account/SwitchUser?username=postal_staff" class="btn btn-outline-warning text-dark w-100 fw-semibold portal-pro-btn">
+                        <i class="bi bi-arrow-right-circle me-1"></i> <span data-i18n="portal_staff_btn">Counter Portal</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 3. Customs -->
+            <div class="col-md-6 col-lg-3 reveal-on-scroll delay-3">
+                <div class="portal-pro-card tilt-card">
+                    <div class="portal-pro-icon-wrap portal-icon-blue">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1" data-i18n="portal_customs_title">Customs &amp; FPO</h5>
+                    <span class="badge bg-primary bg-opacity-10 text-primary small mb-3 align-self-start" data-i18n="portal_customs_badge">Sec 84 Customs</span>
+                    <p class="text-muted small mb-4 flex-grow-1" data-i18n="portal_customs_desc">
+                        Scrutinize electronic declarations, assess export duties, and grant Out of Charge (OOC).
+                    </p>
+                    <a href="/Account/SwitchUser?username=customs_officer" class="btn btn-outline-primary w-100 fw-semibold portal-pro-btn">
+                        <i class="bi bi-arrow-right-circle me-1"></i> <span data-i18n="portal_customs_btn">Customs Portal</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 4. Admin -->
+            <div class="col-md-6 col-lg-3 reveal-on-scroll delay-4">
+                <div class="portal-pro-card tilt-card">
+                    <div class="portal-pro-icon-wrap portal-icon-green">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1" data-i18n="portal_admin_title">Admin &amp; Analytics</h5>
+                    <span class="badge bg-success bg-opacity-10 text-success small mb-3 align-self-start" data-i18n="portal_admin_badge">Directorate</span>
+                    <p class="text-muted small mb-4 flex-grow-1" data-i18n="portal_admin_desc">
+                        National performance metrics, Kendra network oversight, MSME registry, and tariff controls.
+                    </p>
+                    <a href="/Account/SwitchUser?username=admin" class="btn btn-outline-success w-100 fw-semibold portal-pro-btn">
+                        <i class="bi bi-arrow-right-circle me-1"></i> <span data-i18n="portal_admin_btn">Admin Portal</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 5. POSTAL EXPORT SERVICES — PREMIUM CARDS                              -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section class="py-5 bg-white border-bottom">
+    <div class="container px-lg-4">
+        <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-2 reveal-on-scroll">
+            <div>
+                <h2 class="fw-bold text-dark mb-1" style="font-size:2.2rem;" data-i18n="services_title">Postal Export Services</h2>
+                <p class="text-muted small mb-0" data-i18n="services_desc">Reliable, affordable shipping options through India Post</p>
+            </div>
+            <a asp-controller="Home" asp-action="Calculator" class="btn btn-outline-dark fw-semibold">
+                <i class="bi bi-calculator me-1"></i> <span data-i18n="btn_view_tariff">View Full Tariff Table</span>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            <!-- EMS -->
+            <div class="col-md-4 reveal-on-scroll delay-1">
+                <div class="service-pro-card tilt-card">
+                    <div class="service-pro-ribbon service-ribbon-red" data-i18n="badge_fastest">Fastest</div>
+                    <div class="service-pro-icon-row">
+                        <div class="service-pro-icon service-icon-red"><i class="bi bi-lightning-charge-fill"></i></div>
+                        <span class="text-muted small fw-semibold" data-i18n="ems_max_weight">Up to 30 Kg</span>
+                    </div>
+                    <h4 class="h5 fw-bold text-dark" data-i18n="srv_ems_title">International Speed Post (EMS)</h4>
+                    <p class="text-muted small mb-3 flex-grow-1" data-i18n="srv_ems_desc">
+                        Priority international air conveyance with end-to-end milestone tracking and expedited customs clearance.
+                    </p>
+                    <div class="service-pro-footer">
+                        <span class="text-muted small" data-i18n="lbl_transit_time">Transit Time:</span>
+                        <strong class="text-danger" data-i18n="srv_ems_days">3 - 7 Business Days</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Air Parcel -->
+            <div class="col-md-4 reveal-on-scroll delay-2">
+                <div class="service-pro-card tilt-card">
+                    <div class="service-pro-ribbon service-ribbon-gold" data-i18n="badge_bulk">Bulk Friendly</div>
+                    <div class="service-pro-icon-row">
+                        <div class="service-pro-icon service-icon-gold"><i class="bi bi-box-seam-fill"></i></div>
+                        <span class="text-muted small fw-semibold" data-i18n="parcel_max_weight">Up to 20 Kg</span>
+                    </div>
+                    <h4 class="h5 fw-bold text-dark" data-i18n="srv_parcel_title">International Air Parcel</h4>
+                    <p class="text-muted small mb-3 flex-grow-1" data-i18n="srv_parcel_desc">
+                        Cost-effective scheduled air freight solution for bulk commercial shipments, handicrafts, textiles, and merchandise.
+                    </p>
+                    <div class="service-pro-footer">
+                        <span class="text-muted small" data-i18n="lbl_transit_time">Transit Time:</span>
+                        <strong class="text-dark" data-i18n="srv_parcel_days">6 - 12 Business Days</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ITPS -->
+            <div class="col-md-4 reveal-on-scroll delay-3">
+                <div class="service-pro-card tilt-card">
+                    <div class="service-pro-ribbon service-ribbon-blue" data-i18n="badge_ecommerce">E-Commerce</div>
+                    <div class="service-pro-icon-row">
+                        <div class="service-pro-icon service-icon-blue"><i class="bi bi-cart-check-fill"></i></div>
+                        <span class="text-muted small fw-semibold" data-i18n="itps_max_weight">Up to 2.0 Kg</span>
+                    </div>
+                    <h4 class="h5 fw-bold text-dark" data-i18n="srv_itps_title">ITPS (Tracked Packet)</h4>
+                    <p class="text-muted small mb-3 flex-grow-1" data-i18n="srv_itps_desc">
+                        Special low-cost tracked packet service designed for Amazon, Etsy, and eBay cross-border e-commerce sellers.
+                    </p>
+                    <div class="service-pro-footer">
+                        <span class="text-muted small" data-i18n="lbl_transit_time">Transit Time:</span>
+                        <strong class="text-primary" data-i18n="srv_itps_days">5 - 10 Business Days</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 6. CORE VALUE PILLARS FOR MSMEs                                        -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section class="py-5 bg-light border-bottom">
+    <div class="container px-lg-4">
+        <div class="text-center mb-5 reveal-on-scroll">
+            <span class="hero-pro-badge d-inline-flex mb-2" style="font-size:0.75rem; background: #eff6ff; color: #0284c7; border-color: #bae6fd;">
+                <i class="bi bi-stars me-1 text-primary"></i> <span data-i18n="pillars_badge">Exporter Advantages</span>
+            </span>
+            <h2 class="fw-bold text-dark mt-2" style="font-size:2.2rem;" data-i18n="pillars_title">Why Choose Dak Ghar Niryat Kendra?</h2>
+            <p class="text-muted mx-auto" style="max-width: 580px;" data-i18n="pillars_desc">
+                Government of India backed incentives, streamlined customs corridors, and comprehensive postal reach.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4 reveal-on-scroll delay-1">
+                <div class="feature-pro-card">
+                    <div class="feature-pro-icon bg-danger bg-opacity-10 text-danger">
+                        <i class="bi bi-file-earmark-check-fill"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2" data-i18n="feat1_title">100% Paperless e-PBE</h5>
+                    <p class="text-muted small mb-0" data-i18n="feat1_desc">
+                        Direct electronic Postal Bill of Export filing integrated with ICEGATE Customs EDI gateway under Section 84 of Customs Act.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 reveal-on-scroll delay-2">
+                <div class="feature-pro-card">
+                    <div class="feature-pro-icon bg-warning bg-opacity-10 text-warning">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2" data-i18n="feat2_title">Zero-Rated IGST (LUT RFD-11)</h5>
+                    <p class="text-muted small mb-0" data-i18n="feat2_desc">
+                        Export without upfront payment of Integrated GST by linking your active Letter of Undertaking (LUT) reference number.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 reveal-on-scroll delay-3">
+                <div class="feature-pro-card">
+                    <div class="feature-pro-icon bg-success bg-opacity-10 text-success">
+                        <i class="bi bi-percent"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2" data-i18n="feat3_title">RoDTEP Export Rebates</h5>
+                    <p class="text-muted small mb-0" data-i18n="feat3_desc">
+                        Automatic duty drawback credit and RoDTEP claims calculated on FOB values for handicrafts, textiles, and merchandise.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 reveal-on-scroll delay-1">
+                <div class="feature-pro-card">
+                    <div class="feature-pro-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-upc-scan"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2" data-i18n="feat4_title">UPU S10 Standard Barcode</h5>
+                    <p class="text-muted small mb-0" data-i18n="feat4_desc">
+                        13-character Universal Postal Union barcode recognized across 192 postal administrations globally with milestone scans.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 reveal-on-scroll delay-2">
+                <div class="feature-pro-card">
+                    <div class="feature-pro-icon bg-danger bg-opacity-10 text-danger">
+                        <i class="bi bi-truck"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2" data-i18n="feat5_title">Doorstep Postman Pickup</h5>
+                    <p class="text-muted small mb-0" data-i18n="feat5_desc">
+                        Schedule convenient export parcel collection by your local beat postman directly from your workshop or warehouse.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 reveal-on-scroll delay-3">
+                <div class="feature-pro-card">
+                    <div class="feature-pro-icon bg-info bg-opacity-10 text-info">
+                        <i class="bi bi-globe-americas"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2" data-i18n="feat6_title">210+ Global Destinations</h5>
+                    <p class="text-muted small mb-0" data-i18n="feat6_desc">
+                        Direct air cargo connectivity to North America, Europe, Middle East, Asia-Pacific, and Latin America.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 7. MSME ARTISAN & EXPORTER REVIEWS — CONTINUOUS MARQUEE                -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section class="py-5 bg-white border-bottom position-relative overflow-hidden">
+    <div class="container px-lg-4 mb-4">
+        <div class="text-center reveal-on-scroll">
+            <span class="hero-pro-badge d-inline-flex mb-2" style="font-size:0.75rem; background: #fef3c7; color: #b45309; border-color: #fde68a;">
+                <i class="bi bi-star-fill me-1 text-warning"></i> <span data-i18n="stories_badge">Verified Exporter Ratings</span>
+            </span>
+            <h2 class="fw-bold text-dark mt-2" style="font-size:2.2rem;" data-i18n="stories_title">Empowering Indian Artisans Globally</h2>
+            <p class="text-muted mx-auto mb-0" style="max-width: 600px;" data-i18n="stories_desc">
+                Over 12,000+ MSMEs and craft clusters rate Dak Ghar Niryat Kendra 4.9/5 for paperless export logistics and zero-rated IGST compliance.
+            </p>
+        </div>
+    </div>
+
+    <!-- Continuous Marquee Track 1 (Left Scrolling) -->
+    <div class="rating-marquee-container mb-3">
+        <div class="rating-marquee-track">
+            <!-- Review 1 -->
+            <div class="rating-marquee-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1 small">5.0</span>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-success rating-badge-pill">
+                        <i class="bi bi-patch-check-fill me-1"></i> Verified Exporter
+                    </span>
+                </div>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                    "Before DNK, filing customs paperwork for overseas shipments was tedious. Now, we book e-PBE in 2 minutes, get automated S10 labels, and ship our pottery safely to the USA and UK."
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-initials" style="width:34px; height:34px; font-size:0.85rem; background: linear-gradient(135deg, #dc2626, #b91c1c);">
+                            RS
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block small">Rajesh Sharma</strong>
+                            <span class="text-muted" style="font-size:0.75rem;">Jaipur Blue Pottery</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-dark border small">Jaipur HPO</span>
+                </div>
+            </div>
+
+            <!-- Review 2 -->
+            <div class="rating-marquee-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1 small">5.0</span>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-success rating-badge-pill">
+                        <i class="bi bi-patch-check-fill me-1"></i> Verified Exporter
+                    </span>
+                </div>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                    "The zero-rated IGST with LUT has saved our cash flow significantly. Our artisan cluster now dispatches weekly parcels through Moradabad HPO to retail buyers across Europe."
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-initials" style="width:34px; height:34px; font-size:0.85rem; background: linear-gradient(135deg, #d97706, #b45309);">
+                            AV
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block small">Aarti Verma</strong>
+                            <span class="text-muted" style="font-size:0.75rem;">Moradabad Brass Art</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-dark border small">Moradabad HPO</span>
+                </div>
+            </div>
+
+            <!-- Review 3 -->
+            <div class="rating-marquee-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1 small">5.0</span>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-success rating-badge-pill">
+                        <i class="bi bi-patch-check-fill me-1"></i> Verified Exporter
+                    </span>
+                </div>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                    "Doorstep pickup by India Post postmen combined with ITPS tracked packets allowed us to sell directly on Amazon US with full tracking updates sent automatically to our buyers."
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-initials" style="width:34px; height:34px; font-size:0.85rem; background: linear-gradient(135deg, #0284c7, #0369a1);">
+                            MK
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block small">M. Karthikeyan</strong>
+                            <span class="text-muted" style="font-size:0.75rem;">Tirupur Knitwear</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-dark border small">Tirupur HPO</span>
+                </div>
+            </div>
+
+            <!-- Review 4 -->
+            <div class="rating-marquee-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1 small">5.0</span>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-success rating-badge-pill">
+                        <i class="bi bi-patch-check-fill me-1"></i> Verified Exporter
+                    </span>
+                </div>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                    "Customs clearance at Kolkata Foreign Post Office (FPO) is 100% digital now. Out of Charge (OOC) was granted in under 24 hours without any physical paperwork."
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-initials" style="width:34px; height:34px; font-size:0.85rem; background: linear-gradient(135deg, #7c3aed, #5b21b6);">
+                            AG
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block small">Ananya Ghosh</strong>
+                            <span class="text-muted" style="font-size:0.75rem;">Bengal Kantha Quilts</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-dark border small">Kolkata GPO</span>
+                </div>
+            </div>
+
+            <!-- DUPLICATE SET FOR INFINITE CONTINUOUS MARQUEE -->
+            <!-- Duplicate Review 1 -->
+            <div class="rating-marquee-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1 small">5.0</span>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-success rating-badge-pill">
+                        <i class="bi bi-patch-check-fill me-1"></i> Verified Exporter
+                    </span>
+                </div>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                    "Before DNK, filing customs paperwork for overseas shipments was tedious. Now, we book e-PBE in 2 minutes, get automated S10 labels, and ship our pottery safely to the USA and UK."
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-initials" style="width:34px; height:34px; font-size:0.85rem; background: linear-gradient(135deg, #dc2626, #b91c1c);">
+                            RS
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block small">Rajesh Sharma</strong>
+                            <span class="text-muted" style="font-size:0.75rem;">Jaipur Blue Pottery</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-dark border small">Jaipur HPO</span>
+                </div>
+            </div>
+
+            <!-- Duplicate Review 2 -->
+            <div class="rating-marquee-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1 small">5.0</span>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-success rating-badge-pill">
+                        <i class="bi bi-patch-check-fill me-1"></i> Verified Exporter
+                    </span>
+                </div>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                    "The zero-rated IGST with LUT has saved our cash flow significantly. Our artisan cluster now dispatches weekly parcels through Moradabad HPO to retail buyers across Europe."
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-initials" style="width:34px; height:34px; font-size:0.85rem; background: linear-gradient(135deg, #d97706, #b45309);">
+                            AV
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block small">Aarti Verma</strong>
+                            <span class="text-muted" style="font-size:0.75rem;">Moradabad Brass Art</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-dark border small">Moradabad HPO</span>
+                </div>
+            </div>
+
+            <!-- Duplicate Review 3 -->
+            <div class="rating-marquee-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1 small">5.0</span>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-success rating-badge-pill">
+                        <i class="bi bi-patch-check-fill me-1"></i> Verified Exporter
+                    </span>
+                </div>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                    "Doorstep pickup by India Post postmen combined with ITPS tracked packets allowed us to sell directly on Amazon US with full tracking updates sent automatically to our buyers."
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-initials" style="width:34px; height:34px; font-size:0.85rem; background: linear-gradient(135deg, #0284c7, #0369a1);">
+                            MK
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block small">M. Karthikeyan</strong>
+                            <span class="text-muted" style="font-size:0.75rem;">Tirupur Knitwear</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-dark border small">Tirupur HPO</span>
+                </div>
+            </div>
+
+            <!-- Duplicate Review 4 -->
+            <div class="rating-marquee-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1 small">5.0</span>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-success rating-badge-pill">
+                        <i class="bi bi-patch-check-fill me-1"></i> Verified Exporter
+                    </span>
+                </div>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                    "Customs clearance at Kolkata Foreign Post Office (FPO) is 100% digital now. Out of Charge (OOC) was granted in under 24 hours without any physical paperwork."
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-initials" style="width:34px; height:34px; font-size:0.85rem; background: linear-gradient(135deg, #7c3aed, #5b21b6);">
+                            AG
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block small">Ananya Ghosh</strong>
+                            <span class="text-muted" style="font-size:0.75rem;">Bengal Kantha Quilts</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-dark border small">Kolkata GPO</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Continuous Marquee Track 2 (Right Scrolling - Reverse) -->
+    <div class="rating-marquee-container">
+        <div class="rating-marquee-track-reverse">
+            <!-- Review 5 -->
+            <div class="rating-marquee-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1 small">5.0</span>
+                    </div>
+                    <span class="badge bg-primary bg-opacity-10 text-primary rating-badge-pill">
+                        <i class="bi bi-patch-check-fill me-1"></i> MSME Exporter
+                    </span>
+                </div>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                    "Thermal S10 barcode labels and automated RoDTEP rebates credited directly to our bank account make DNK the most cost-effective export channel for our sports goods."
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-initials" style="width:34px; height:34px; font-size:0.85rem; background: linear-gradient(135deg, #059669, #047857);">
+                            GS
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block small">Gurpreet Singh</strong>
+                            <span class="text-muted" style="font-size:0.75rem;">Ludhiana Sports Goods</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-dark border small">Ludhiana HPO</span>
+                </div>
+            </div>
+
+            <!-- Review 6 -->
+            <div class="rating-marquee-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1 small">5.0</span>
+                    </div>
+                    <span class="badge bg-warning bg-opacity-10 text-dark rating-badge-pill">
+                        <i class="bi bi-patch-check-fill me-1"></i> Women SHG Lead
+                    </span>
+                </div>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                    "Our women artisan self-help group now ships authentic Mithila paintings across Japan and Canada. Postal counter staff assisted us with barcode induction seamlessly."
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-initials" style="width:34px; height:34px; font-size:0.85rem; background: linear-gradient(135deg, #ec4899, #be185d);">
+                            SD
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block small">Sunita Devi</strong>
+                            <span class="text-muted" style="font-size:0.75rem;">Madhubani Folk Art</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-dark border small">Patna GPO</span>
+                </div>
+            </div>
+
+            <!-- Review 7 -->
+            <div class="rating-marquee-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1 small">5.0</span>
+                    </div>
+                    <span class="badge bg-info bg-opacity-10 text-info rating-badge-pill">
+                        <i class="bi bi-patch-check-fill me-1"></i> GI Tagged Exporter
+                    </span>
+                </div>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                    "International EMS with real-time UPU tracking gives our global luxury buyers complete peace of mind. Our authentic Pashmina shawls reach Dubai within 3 business days."
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-initials" style="width:34px; height:34px; font-size:0.85rem; background: linear-gradient(135deg, #0ea5e9, #0284c7);">
+                            FA
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block small">Farooq Ahmed</strong>
+                            <span class="text-muted" style="font-size:0.75rem;">Kashmir Pashmina Crafts</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-dark border small">Srinagar GPO</span>
+                </div>
+            </div>
+
+            <!-- Review 8 -->
+            <div class="rating-marquee-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1 small">5.0</span>
+                    </div>
+                    <span class="badge bg-danger bg-opacity-10 text-danger rating-badge-pill">
+                        <i class="bi bi-patch-check-fill me-1"></i> Verified Exporter
+                    </span>
+                </div>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                    "Insured postal air parcels provide the required security and commercial invoice clearance for our gemstone shipments to Singapore and Australia."
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-initials" style="width:34px; height:34px; font-size:0.85rem; background: linear-gradient(135deg, #f59e0b, #d97706);">
+                            DJ
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block small">Devendra Joshi</strong>
+                            <span class="text-muted" style="font-size:0.75rem;">Surat Jewelry &amp; Zari</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-dark border small">Surat HPO</span>
+                </div>
+            </div>
+
+            <!-- DUPLICATE SET FOR INFINITE CONTINUOUS MARQUEE -->
+            <!-- Duplicate Review 5 -->
+            <div class="rating-marquee-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1 small">5.0</span>
+                    </div>
+                    <span class="badge bg-primary bg-opacity-10 text-primary rating-badge-pill">
+                        <i class="bi bi-patch-check-fill me-1"></i> MSME Exporter
+                    </span>
+                </div>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                    "Thermal S10 barcode labels and automated RoDTEP rebates credited directly to our bank account make DNK the most cost-effective export channel for our sports goods."
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-initials" style="width:34px; height:34px; font-size:0.85rem; background: linear-gradient(135deg, #059669, #047857);">
+                            GS
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block small">Gurpreet Singh</strong>
+                            <span class="text-muted" style="font-size:0.75rem;">Ludhiana Sports Goods</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-dark border small">Ludhiana HPO</span>
+                </div>
+            </div>
+
+            <!-- Duplicate Review 6 -->
+            <div class="rating-marquee-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1 small">5.0</span>
+                    </div>
+                    <span class="badge bg-warning bg-opacity-10 text-dark rating-badge-pill">
+                        <i class="bi bi-patch-check-fill me-1"></i> Women SHG Lead
+                    </span>
+                </div>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                    "Our women artisan self-help group now ships authentic Mithila paintings across Japan and Canada. Postal counter staff assisted us with barcode induction seamlessly."
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-initials" style="width:34px; height:34px; font-size:0.85rem; background: linear-gradient(135deg, #ec4899, #be185d);">
+                            SD
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block small">Sunita Devi</strong>
+                            <span class="text-muted" style="font-size:0.75rem;">Madhubani Folk Art</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-dark border small">Patna GPO</span>
+                </div>
+            </div>
+
+            <!-- Duplicate Review 7 -->
+            <div class="rating-marquee-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1 small">5.0</span>
+                    </div>
+                    <span class="badge bg-info bg-opacity-10 text-info rating-badge-pill">
+                        <i class="bi bi-patch-check-fill me-1"></i> GI Tagged Exporter
+                    </span>
+                </div>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                    "International EMS with real-time UPU tracking gives our global luxury buyers complete peace of mind. Our authentic Pashmina shawls reach Dubai within 3 business days."
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-initials" style="width:34px; height:34px; font-size:0.85rem; background: linear-gradient(135deg, #0ea5e9, #0284c7);">
+                            FA
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block small">Farooq Ahmed</strong>
+                            <span class="text-muted" style="font-size:0.75rem;">Kashmir Pashmina Crafts</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-dark border small">Srinagar GPO</span>
+                </div>
+            </div>
+
+            <!-- Duplicate Review 8 -->
+            <div class="rating-marquee-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="rating-stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <span class="text-dark fw-bold ms-1 small">5.0</span>
+                    </div>
+                    <span class="badge bg-danger bg-opacity-10 text-danger rating-badge-pill">
+                        <i class="bi bi-patch-check-fill me-1"></i> Verified Exporter
+                    </span>
+                </div>
+                <p class="text-secondary small mb-3 flex-grow-1">
+                    "Insured postal air parcels provide the required security and commercial invoice clearance for our gemstone shipments to Singapore and Australia."
+                </p>
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-initials" style="width:34px; height:34px; font-size:0.85rem; background: linear-gradient(135deg, #f59e0b, #d97706);">
+                            DJ
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block small">Devendra Joshi</strong>
+                            <span class="text-muted" style="font-size:0.75rem;">Surat Jewelry &amp; Zari</span>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-dark border small">Surat HPO</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 8. FREQUENTLY ASKED QUESTIONS (FAQ)                                    -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section class="py-5 bg-light border-bottom">
+    <div class="container px-lg-4" style="max-width: 900px;">
+        <div class="text-center mb-5 reveal-on-scroll">
+            <span class="hero-pro-badge d-inline-flex mb-2" style="font-size:0.75rem; background: #f1f5f9; color: #475569; border-color: #cbd5e1;">
+                <i class="bi bi-question-circle me-1 text-secondary"></i> <span data-i18n="faq_badge">Help &amp; Guidelines</span>
+            </span>
+            <h2 class="fw-bold text-dark mt-2" style="font-size:2.2rem;" data-i18n="faq_title">Frequently Asked Questions</h2>
+            <p class="text-muted mx-auto" data-i18n="faq_desc">
+                Everything you need to know about exporting through the Dak Ghar Niryat Kendra portal.
+            </p>
+        </div>
+
+        <div class="accordion accordion-dnk reveal-on-scroll" id="faqAccordion">
+            <!-- FAQ 1 -->
+            <div class="accordion-item mb-3">
+                <h2 class="accordion-header" id="faqHeading1">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse1" aria-expanded="true" aria-controls="faqCollapse1" data-i18n="faq1_q">
+                        What documents do I need to register as an MSME Exporter on DNK?
+                    </button>
+                </h2>
+                <div id="faqCollapse1" class="accordion-collapse collapse show" aria-labelledby="faqHeading1" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body" data-i18n="faq1_a">
+                        To register, you need: 1) Valid DGFT Import-Export Code (IEC), 2) GSTIN registration, 3) Active Letter of Undertaking (LUT RFD-11) for zero-rated IGST export, and 4) Authorized Dealer (AD) Code registered with Customs.
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ 2 -->
+            <div class="accordion-item mb-3">
+                <h2 class="accordion-header" id="faqHeading2">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse2" aria-expanded="false" aria-controls="faqCollapse2" data-i18n="faq2_q">
+                        What is an electronic Postal Bill of Export (e-PBE)?
+                    </button>
+                </h2>
+                <div id="faqCollapse2" class="accordion-collapse collapse" aria-labelledby="faqHeading2" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body" data-i18n="faq2_a">
+                        An e-PBE is a paperless commercial export declaration governed by Section 84 of the Customs Act, 1962. It replaces traditional manual shipping bills and transmits consignment data directly to the Foreign Post Office (FPO) customs system.
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ 3 -->
+            <div class="accordion-item mb-3">
+                <h2 class="accordion-header" id="faqHeading3">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse3" aria-expanded="false" aria-controls="faqCollapse3" data-i18n="faq3_q">
+                        How does Doorstep Pickup work for export parcels?
+                    </button>
+                </h2>
+                <div id="faqCollapse3" class="accordion-collapse collapse" aria-labelledby="faqHeading3" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body" data-i18n="faq3_a">
+                        Once your e-PBE is filed and S10 barcode printed, you can request pickup from your Exporter Desk. Your assigned beat postman receives the collection task and picks up the parcel directly from your premises with digital barcode scanning.
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ 4 -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeading4">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse4" aria-expanded="false" aria-controls="faqCollapse4" data-i18n="faq4_q">
+                        Can I claim RoDTEP and Duty Drawback on postal exports?
+                    </button>
+                </h2>
+                <div id="faqCollapse4" class="accordion-collapse collapse" aria-labelledby="faqHeading4" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body" data-i18n="faq4_a">
+                        Yes. Consignments exported via e-PBE are fully eligible for RoDTEP (Remission of Duties and Taxes on Exported Products) and duty drawback benefits directly credited to your authorized bank account.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- 9. CTA: FIND YOUR NEAREST KENDRA                                       -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section class="py-5 bg-white">
+    <div class="container px-lg-4">
+        <div class="cta-pro-card reveal-on-scroll">
+            <div class="cta-pro-bg"></div>
+            <div class="row align-items-center g-4 position-relative" style="z-index:2;">
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge bg-white text-danger fw-bold px-3 py-2"><i class="bi bi-pin-map-fill me-1"></i> Pan-India Network</span>
+                    </div>
+                    <h3 class="fw-bold text-white mb-2" data-i18n="locator_banner_title">Find Your Nearest Dak Ghar Niryat Kendra</h3>
+                    <p class="text-white text-opacity-75 mb-0" data-i18n="locator_banner_desc">
+                        Over 8+ major head post offices are currently operational with dedicated export desks, weighing scales, and barcode induction counters.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a asp-controller="Home" asp-action="Locator" class="btn btn-white btn-lg px-4 fw-bold shadow">
+                        <i class="bi bi-geo-alt me-1"></i> <span data-i18n="btn_locate_kendras">Locate Kendras</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+    function switchHeroTab(tabName) {
+        const trackTab = document.getElementById("track-tab");
+        const rateTab = document.getElementById("rate-tab");
+        const tabTrack = document.getElementById("tab-track");
+        const tabRate = document.getElementById("tab-rate");
+
+        if (tabName === 'track') {
+            trackTab?.classList.add("active");
+            rateTab?.classList.remove("active");
+            if (tabTrack) tabTrack.style.display = "block";
+            if (tabRate) tabRate.style.display = "none";
+            tabTrack?.classList.add("show", "active");
+            tabRate?.classList.remove("show", "active");
+        } else {
+            rateTab?.classList.add("active");
+            trackTab?.classList.remove("active");
+            if (tabRate) tabRate.style.display = "block";
+            if (tabTrack) tabTrack.style.display = "none";
+            tabRate?.classList.add("show", "active");
+            tabTrack?.classList.remove("show", "active");
+            calculateQuickRates();
+        }
+    }
+
+    function fillTrack(num) {
+        const input = document.getElementById("simpleTrackingInput");
+        if (input) {
+            input.value = num;
+            input.focus();
+        }
+    }
+
+    const simpleRates = {
+        "IN": { ems: 250, parcel: 180 },
+        "US": { ems: 1500, parcel: 1100 },
+        "GB": { ems: 1400, parcel: 1050 },
+        "AE": { ems: 900, parcel: 700 },
+        "DE": { ems: 1400, parcel: 1050 },
+        "AU": { ems: 1600, parcel: 1200 },
+        "CA": { ems: 1550, parcel: 1150 },
+        "SG": { ems: 1100, parcel: 800 },
+        "OTH": { ems: 1800, parcel: 1350 }
+    };
+
+    function calculateQuickRates() {
+        const country = document.getElementById("quickCountry")?.value || "US";
+        const weight = parseFloat(document.getElementById("quickWeight")?.value || "1.0");
+        const base = simpleRates[country] || simpleRates["US"];
+
+        const weightMultiplier = Math.max(1, weight);
+        const emsTotal = base.ems * weightMultiplier * 1.18;
+        const parcelTotal = base.parcel * weightMultiplier * 1.18;
+
+        const emsEl = document.getElementById("quickEmsPrice");
+        const parcelEl = document.getElementById("quickParcelPrice");
+
+        if (emsEl) emsEl.textContent = "₹ " + emsTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        if (parcelEl) parcelEl.textContent = "₹ " + parcelTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+</script>
+}

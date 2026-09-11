@@ -1,0 +1,117 @@
+@model DakGharNiryatKendra.Models.ExportConsignment
+@{
+    Layout = null;
+    var qrBase64 = ViewBag.QrCodeBase64 as string;
+    var barcodeSvg = ViewBag.BarcodeSvg as string;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Shipping Label - @Model.TrackingNumber</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body { font-family: Arial, sans-serif; background: #e2e8f0; padding: 20px; color: #000; font-size: 12px; }
+        .thermal-label { background: #fff; width: 420px; margin: 0 auto; border: 2px solid #000; padding: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .service-banner { background: #000; color: #fff; padding: 4px 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+        .barcode-box { text-align: center; border-bottom: 2px solid #000; padding: 8px 0; margin-bottom: 8px; }
+        .label-tbl { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
+        .label-tbl td { border: 1px solid #000; padding: 4px 6px; vertical-align: top; }
+        .dest-flag { font-size: 26px; font-weight: 900; }
+        @@media print {
+            body { background: #fff; padding: 0; }
+            .thermal-label { width: 100%; max-width: 4" ; border: 2px solid #000; box-shadow: none; margin: 0; padding: 10px; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="text-center mb-3 no-print">
+        <button onclick="window.print()" class="btn btn-danger btn-sm px-4 fw-bold shadow-sm">
+            &#128438; Print Thermal Shipping Label (4"x6")
+        </button>
+        <button onclick="window.close()" class="btn btn-outline-secondary btn-sm ms-2">Close</button>
+    </div>
+
+    <div class="thermal-label">
+        <!-- Service Header Banner -->
+        <div class="service-banner mb-2">
+            <div>INDIA POST &bull; @Model.ServiceType.ToString().Replace('_', ' ')</div>
+            <div class="dest-flag">@Model.DestinationCountryCode</div>
+        </div>
+
+        <!-- UPU S10 Barcode -->
+        <div class="barcode-box">
+            @Html.Raw(barcodeSvg)
+        </div>
+
+        <!-- Addresses Grid -->
+        <table class="label-tbl">
+            <tr>
+                <td style="width: 50%;">
+                    <div class="fw-bold" style="font-size: 10px; text-transform: uppercase;">FROM / EXPEDITEUR:</div>
+                    <div class="fw-bold">@(Model.Exporter?.BusinessName ?? Model.Exporter?.FullName)</div>
+                    <div>@(Model.Exporter?.Address)</div>
+                    <div>@(Model.Exporter?.City), @(Model.Exporter?.State) - @(Model.Exporter?.Pincode)</div>
+                    <div>INDIA &bull; Tel: @(Model.Exporter?.PhoneNumber)</div>
+                    <div class="font-monospace" style="font-size: 10px;">IEC: @(Model.Exporter?.IecNumber)</div>
+                </td>
+                <td style="width: 50%;">
+                    <div class="fw-bold text-danger" style="font-size: 10px; text-transform: uppercase;">TO / DESTINATAIRE:</div>
+                    <div class="fw-bold" style="font-size: 13px;">@Model.RecipientName</div>
+                    @if (!string.IsNullOrEmpty(Model.RecipientCompany))
+                    {
+                        <div class="fw-semibold">@Model.RecipientCompany</div>
+                    }
+                    <div>@Model.RecipientAddress</div>
+                    <div>@Model.RecipientCity, @Model.RecipientState</div>
+                    <div class="fw-bold fs-6">@Model.RecipientPostalCode</div>
+                    <div class="fw-bold text-uppercase fs-6">@Model.RecipientCountry</div>
+                    <div>Tel: @Model.RecipientPhone</div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Customs Declaration CN22/23 Integrated Summary -->
+        <div class="border border-dark p-2 mb-2" style="font-size: 10px;">
+            <div class="d-flex justify-content-between align-items-center fw-bold border-bottom pb-1 mb-1">
+                <span>CUSTOMS DECLARATION &bull; CN23</span>
+                <span>PBE: @Model.PbeNumber</span>
+            </div>
+
+            <table class="w-100" style="font-size: 10px;">
+                <tr class="fw-bold">
+                    <td>Contents</td>
+                    <td>HS Code</td>
+                    <td>Qty</td>
+                    <td>Value (INR)</td>
+                </tr>
+                @foreach (var item in Model.Items.Take(3))
+                {
+                    <tr>
+                        <td>@item.ItemDescription</td>
+                        <td class="font-monospace">@item.HsCode</td>
+                        <td>@item.Quantity @item.UnitOfMeasurement</td>
+                        <td>₹ @item.TotalPriceINR.ToString("N0")</td>
+                    </tr>
+                }
+            </table>
+        </div>
+
+        <!-- Weight & QR Code Row -->
+        <div class="d-flex justify-content-between align-items-center border-top border-dark pt-2">
+            <div>
+                <div><strong>Gross Wt:</strong> @Model.ActualWeightKg.ToString("F2") Kg</div>
+                <div><strong>Postage:</strong> ₹ @Model.TotalShippingCostINR.ToString("N2") (PAID)</div>
+                <div><strong>DNK Kendra:</strong> @(Model.DnkCenter?.CenterCode ?? "DNK-DEL-01")</div>
+            </div>
+            <div>
+                @if (!string.IsNullOrEmpty(qrBase64))
+                {
+                    <img src="@qrBase64" alt="QR Code" style="width: 65px; height: 65px;" />
+                }
+            </div>
+        </div>
+    </div>
+</body>
+</html>

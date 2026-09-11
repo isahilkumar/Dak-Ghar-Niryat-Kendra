@@ -1,0 +1,223 @@
+@model DakGharNiryatKendra.Models.ExportConsignment
+@{
+    ViewData["Title"] = $"Consignment {Model.TrackingNumber}";
+    var qrBase64 = ViewBag.QrCodeBase64 as string;
+    var barcodeSvg = ViewBag.BarcodeSvg as string;
+}
+
+<div class="container-fluid px-lg-4 py-4">
+    <!-- Top Action Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <h1 class="h3 fw-bold text-dark mb-0 font-monospace">@Model.TrackingNumber</h1>
+                <span class="badge-status @(Model.Status == DakGharNiryatKendra.Models.ConsignmentStatus.Delivered ? "badge-status-delivered" : Model.Status == DakGharNiryatKendra.Models.ConsignmentStatus.CustomsHold ? "badge-status-hold" : "badge-status-transit") fs-6">
+                    @Model.Status.ToString()
+                </span>
+            </div>
+            <p class="text-muted small mb-0 mt-1">
+                <strong>PBE Reference:</strong> <span class="font-monospace">@Model.PbeNumber</span> | 
+                <strong>Service:</strong> @Model.ServiceType.ToString().Replace('_', ' ') | 
+                <strong>Filing Date:</strong> @Model.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")
+            </p>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <a asp-controller="Tracking" asp-action="Index" asp-route-id="@Model.TrackingNumber" class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-radar me-1"></i> Public Tracking View
+            </a>
+            <a asp-controller="Exporter" asp-action="PrintPbe" asp-route-id="@Model.Id" target="_blank" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-file-earmark-text me-1"></i> Print PBE Form
+            </a>
+            <a asp-controller="Exporter" asp-action="PrintLabel" asp-route-id="@Model.Id" target="_blank" class="btn btn-dnk-primary btn-sm">
+                <i class="bi bi-printer me-1"></i> Print Shipping Label
+            </a>
+            <a asp-controller="Exporter" asp-action="PrintInvoice" asp-route-id="@Model.Id" target="_blank" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-receipt me-1"></i> Invoice & Packing List
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Main Details Column -->
+        <div class="col-lg-8">
+            <!-- Consignment Specs Card -->
+            <div class="dnk-card p-4 mb-4">
+                <div class="row g-4">
+                    <div class="col-md-6 border-end">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3"><i class="bi bi-person-circle text-danger me-1"></i> Sender / Exporter Details</h6>
+                        <div class="fw-bold text-dark">@(Model.Exporter?.BusinessName ?? Model.Exporter?.FullName)</div>
+                        <div class="text-muted small mb-2">@(Model.Exporter?.Address), @(Model.Exporter?.City), @(Model.Exporter?.State) - @(Model.Exporter?.Pincode)</div>
+                        <div class="small mb-1"><strong>IEC Code:</strong> <span class="font-monospace">@(Model.Exporter?.IecNumber)</span></div>
+                        <div class="small mb-1"><strong>GSTIN:</strong> <span class="font-monospace">@(Model.Exporter?.Gstin)</span></div>
+                        <div class="small"><strong>LUT Reference:</strong> <span class="font-monospace">@(Model.LutNumber ?? "N/A")</span></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3"><i class="bi bi-geo-alt text-success me-1"></i> Consignee (Destination) Details</h6>
+                        <div class="fw-bold text-dark">@Model.RecipientName</div>
+                        @if (!string.IsNullOrEmpty(Model.RecipientCompany))
+                        {
+                            <div class="text-secondary small">@Model.RecipientCompany</div>
+                        }
+                        <div class="text-muted small mb-2">@Model.RecipientAddress, @Model.RecipientCity, @Model.RecipientState - <strong>@Model.RecipientPostalCode</strong>, <strong>@Model.RecipientCountry</strong></div>
+                        <div class="small mb-1"><i class="bi bi-envelope me-1"></i>@Model.RecipientEmail</div>
+                        <div class="small"><i class="bi bi-telephone me-1"></i>@Model.RecipientPhone</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Items Table Card -->
+            <div class="dnk-card p-4 mb-4">
+                <h3 class="h5 fw-bold text-dark mb-3 pb-2 border-bottom">Export Goods & Customs Classification</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm align-middle small mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Item Description</th>
+                                <th>HS Code</th>
+                                <th>Quantity</th>
+                                <th>Unit Price (INR)</th>
+                                <th>Net Wt</th>
+                                <th class="text-end">Total (INR)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int idx = 1; }
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>@(idx++)</td>
+                                    <td class="fw-semibold">@item.ItemDescription</td>
+                                    <td><span class="badge bg-light text-dark border font-monospace">@item.HsCode</span></td>
+                                    <td>@item.Quantity @item.UnitOfMeasurement</td>
+                                    <td>₹ @item.UnitPriceINR.ToString("N2")</td>
+                                    <td>@item.NetWeightKg.ToString("F2") Kg</td>
+                                    <td class="text-end fw-bold">₹ @item.TotalPriceINR.ToString("N2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-light fw-bold">
+                            <tr>
+                                <td colspan="6" class="text-end">Total Declared FOB Value:</td>
+                                <td class="text-end text-danger">₹ @Model.DeclaredValueINR.ToString("N2")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Milestone History -->
+            <div class="dnk-card p-4">
+                <h3 class="h5 fw-bold text-dark mb-3 pb-2 border-bottom d-flex align-items-center gap-2">
+                    <i class="bi bi-clock-history text-danger"></i> Tracking Events & Scrutiny Log
+                </h3>
+
+                <div class="tracking-timeline">
+                    @foreach (var m in Model.Milestones)
+                    {
+                        <div class="timeline-step completed">
+                            <div class="step-marker"><i class="bi bi-check"></i></div>
+                            <div class="step-content">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="step-time">@m.EventTime.ToString("dd MMM yyyy, hh:mm tt")</span>
+                                    <span class="badge bg-light text-secondary border small">@m.StatusCategory</span>
+                                </div>
+                                <h4 class="step-headline">@m.StatusHeadline</h4>
+                                <div class="step-location"><i class="bi bi-geo-alt"></i> @m.FacilityLocation</div>
+                                <p class="step-details">@m.DetailedDescription</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Barcode, Weighment & Customs Card -->
+        <div class="col-lg-4">
+            <!-- Label Quick Card -->
+            <div class="dnk-card p-4 mb-4 text-center">
+                <h6 class="text-uppercase text-muted small fw-bold mb-3">UPU S10 Barcode Label</h6>
+                <div class="barcode-container mb-2">
+                    @Html.Raw(barcodeSvg)
+                </div>
+                @if (!string.IsNullOrEmpty(qrBase64))
+                {
+                    <img src="@qrBase64" alt="QR Code" style="width: 110px; height: 110px;" class="my-2 border p-1 rounded" />
+                }
+                <div class="text-muted small mt-2">
+                    Scan this barcode at your DNK counter or present to the pickup postman.
+                </div>
+            </div>
+
+            <!-- Weighment & Postage Breakdown Card -->
+            <div class="dnk-card p-4 mb-4">
+                <h6 class="text-uppercase text-muted small fw-bold mb-3 border-bottom pb-2">Weighment & Postage Paid</h6>
+                <div class="d-flex justify-content-between mb-2 small">
+                    <span class="text-muted">Actual Gross Weight:</span>
+                    <span class="fw-bold">@Model.ActualWeightKg.ToString("F2") Kg</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 small">
+                    <span class="text-muted">Dimensions (LxWxH):</span>
+                    <span>@Model.LengthCm &times; @Model.WidthCm &times; @Model.HeightCm cm</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 small">
+                    <span class="text-muted">Volumetric Weight:</span>
+                    <span>@Model.VolumetricWeightKg.ToString("F2") Kg</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3 small text-danger fw-bold border-bottom pb-2">
+                    <span>Chargeable Weight:</span>
+                    <span>@Model.ChargeableWeightKg.ToString("F2") Kg</span>
+                </div>
+
+                <div class="d-flex justify-content-between mb-1 small">
+                    <span class="text-muted">Base Postage:</span>
+                    <span>₹ @Model.PostageAmountINR.ToString("N2")</span>
+                </div>
+                <div class="d-flex justify-content-between mb-1 small">
+                    <span class="text-muted">Fuel Surcharge:</span>
+                    <span>₹ @Model.FuelSurchargeINR.ToString("N2")</span>
+                </div>
+                <div class="d-flex justify-content-between mb-1 small">
+                    <span class="text-muted">Insurance Coverage:</span>
+                    <span>₹ @Model.InsuranceAmountINR.ToString("N2")</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 small">
+                    <span class="text-muted">GST (18%):</span>
+                    <span>₹ @Model.GstAmountINR.ToString("N2")</span>
+                </div>
+                <div class="d-flex justify-content-between border-top pt-2 fw-bold text-dark fs-5">
+                    <span>Total Cost:</span>
+                    <span class="text-danger">₹ @Model.TotalShippingCostINR.ToString("N2")</span>
+                </div>
+            </div>
+
+            <!-- Customs & Induction Summary -->
+            <div class="dnk-card p-4">
+                <h6 class="text-uppercase text-muted small fw-bold mb-3 border-bottom pb-2">Induction & Customs Desk</h6>
+                <div class="mb-2 small">
+                    <strong>Assigned DNK Kendra:</strong>
+                    <div class="text-dark">@(Model.DnkCenter?.CenterName ?? "New Delhi GPO DNK")</div>
+                </div>
+                <div class="mb-2 small">
+                    <strong>Customs Scrutiny Status:</strong>
+                    <div><span class="badge bg-info text-dark">@Model.CustomsStatus.ToString()</span></div>
+                </div>
+                @if (Model.CustomsAssessedDutyINR > 0)
+                {
+                    <div class="mb-2 small">
+                        <strong>Assessed Duty:</strong>
+                        <div class="text-danger fw-bold">₹ @Model.CustomsAssessedDutyINR.ToString("N2")</div>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.CustomsOfficerRemarks))
+                {
+                    <div class="small p-2 bg-light rounded border text-muted">
+                        <i class="bi bi-chat-quote me-1"></i>@Model.CustomsOfficerRemarks
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

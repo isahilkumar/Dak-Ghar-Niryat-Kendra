@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="100%" height="100%">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="ipRedGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D32F2F" />
+      <stop offset="50%" stop-color="#B71C1C" />
+      <stop offset="100%" stop-color="#880E14" />
+    </linearGradient>
+
+    <linearGradient id="ipGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFB300" />
+      <stop offset="100%" stop-color="#F57C00" />
+    </linearGradient>
+
+    <linearGradient id="ipGoldLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE082" />
+      <stop offset="100%" stop-color="#FFB300" />
+    </linearGradient>
+
+    <linearGradient id="outerRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#F1F5F9" />
+    </linearGradient>
+
+    <filter id="badgeShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#880E14" flood-opacity="0.25" />
+    </filter>
+
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000000" flood-opacity="0.2" />
+    </filter>
+
+    <!-- Text Paths for Circular Text -->
+    <path id="textPathTop" d="M 32,120 A 88,88 0 0,1 208,120" />
+    <path id="textPathBottom" d="M 208,120 A 88,88 0 0,1 32,120" />
+  </defs>
+
+  <!-- Outer Ring Shadow & Base -->
+  <circle cx="120" cy="120" r="114" fill="url(#outerRingGrad)" stroke="#CBD5E1" stroke-width="2.5" filter="url(#badgeShadow)" />
+  <circle cx="120" cy="120" r="108" fill="#B71C1C" stroke="#D32F2F" stroke-width="1.5" />
+
+  <!-- Circular Border Rings -->
+  <circle cx="120" cy="120" r="82" fill="#FFFFFF" stroke="#F59E0B" stroke-width="2" />
+  <circle cx="120" cy="120" r="80" fill="#FFFDF7" />
+
+  <!-- Circular Text in Outer Red Band -->
+  <text fill="#FFFFFF" font-family="'Plus Jakarta Sans', 'Outfit', sans-serif" font-size="10.2" font-weight="700" letter-spacing="1.5">
+    <textPath href="#textPathTop" startOffset="50%" text-anchor="middle">
+      डाक घर निर्यात केंद्र • DAK GHAR NIRYAT KENDRA
+    </textPath>
+  </text>
+  <text fill="#FFD54F" font-family="'Plus Jakarta Sans', 'Outfit', sans-serif" font-size="9.5" font-weight="800" letter-spacing="2">
+    <textPath href="#textPathBottom" startOffset="50%" text-anchor="middle">
+      DEPARTMENT OF POSTS • INDIA POST
+    </textPath>
+  </text>
+
+  <!-- Inner Content -->
+  <!-- Tricolor Accent arc at top of inner circle -->
+  <path d="M 70,72 A 70,70 0 0,1 170,72" fill="none" stroke="#FF9933" stroke-width="3.5" stroke-linecap="round" />
+  <path d="M 78,66 A 70,70 0 0,1 162,66" fill="none" stroke="#138808" stroke-width="2" stroke-linecap="round" opacity="0.8" />
+
+  <!-- Ashoka Chakra (Top Center) -->
+  <g transform="translate(120, 78)">
+    <circle cx="0" cy="0" r="12" fill="#FFFFFF" stroke="#1E3A8A" stroke-width="2" />
+    <circle cx="0" cy="0" r="3.5" fill="#1E3A8A" />
+    <!-- 24 spokes -->
+    <g stroke="#1E3A8A" stroke-width="0.9" opacity="0.85">
+      <line x1="0" y1="-12" x2="0" y2="12" />
+      <line x1="-12" y1="0" x2="12" y2="0" />
+      <line x1="-8.5" y1="-8.5" x2="8.5" y2="8.5" />
+      <line x1="-8.5" y1="8.5" x2="8.5" y2="-8.5" />
+      <line x1="-4.6" y1="-11.1" x2="4.6" y2="11.1" />
+      <line x1="-11.1" y1="-4.6" x2="11.1" y2="4.6" />
+      <line x1="-11.1" y1="4.6" x2="11.1" y2="-4.6" />
+      <line x1="-4.6" y1="11.1" x2="4.6" y2="-11.1" />
+      <line x1="-2.4" y1="-11.7" x2="2.4" y2="11.7" />
+      <line x1="-11.7" y1="-2.4" x2="11.7" y2="2.4" />
+      <line x1="-11.7" y1="2.4" x2="11.7" y2="-2.4" />
+      <line x1="-2.4" y1="11.7" x2="2.4" y2="-11.7" />
+    </g>
+  </g>
+
+  <!-- India Post Dynamic Flying Wing Emblem (Left Wing) -->
+  <path d="M 68,118 C 50,110 52,90 76,88 C 88,87 100,96 104,112 C 86,104 74,108 68,118 Z" fill="url(#ipRedGrad)" />
+  <path d="M 72,106 C 60,98 62,82 82,82 C 92,82 101,90 105,102 C 90,96 80,98 72,106 Z" fill="url(#ipGoldGrad)" />
+
+  <!-- India Post Dynamic Flying Wing Emblem (Right Wing) -->
+  <path d="M 172,118 C 190,110 188,90 164,88 C 152,87 140,96 136,112 C 154,104 166,108 172,118 Z" fill="url(#ipRedGrad)" />
+  <path d="M 168,106 C 180,98 178,82 158,82 C 148,82 139,90 135,102 C 150,96 160,98 168,106 Z" fill="url(#ipGoldGrad)" />
+
+  <!-- Center Parcel / Speed Post Envelope Motif -->
+  <g transform="translate(120, 126)" filter="url(#glow)">
+    <!-- Base Envelope Box -->
+    <rect x="-34" y="-18" width="68" height="42" rx="5" fill="url(#ipRedGrad)" stroke="#880E14" stroke-width="1.5" />
+    <!-- Flap Geometry -->
+    <polygon points="-34,-18 0,6 34,-18" fill="#EF4444" opacity="0.95" />
+    <polyline points="-34,-18 0,6 34,-18" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
+    <!-- Bottom Creases -->
+    <line x1="-34" y1="24" x2="-6" y2="-2" stroke="#7F1D1D" stroke-width="1.5" />
+    <line x1="34" y1="24" x2="6" y2="-2" stroke="#7F1D1D" stroke-width="1.5" />
+    <!-- Speed Post Golden Star / Badge Motif -->
+    <circle cx="0" cy="-6" r="5" fill="url(#ipGoldLight)" stroke="#D97706" stroke-width="0.8" />
+    <polygon points="0,-9 1.5,-6.5 4,-6 2,-4 2.5,-1 0,-2.5 -2.5,-1 -2,-4 -4,-6 -1.5,-6.5" fill="#B71C1C" />
+  </g>
+
+  <!-- Global Export Network Lines (Subtle Globe Latitude/Longitude Arc underneath) -->
+  <path d="M 72,156 Q 120,172 168,156" fill="none" stroke="#0284C7" stroke-width="1.8" stroke-dasharray="3,2" opacity="0.6" />
+
+  <!-- DNK Banner Ribbon at Bottom -->
+  <g transform="translate(120, 168)">
+    <rect x="-42" y="-10" width="84" height="20" rx="10" fill="url(#ipRedGrad)" stroke="#FFB300" stroke-width="1.5" />
+    <text x="0" y="4" font-family="'Outfit', 'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="1.5">
+      DNK EXPORT
+    </text>
+  </g>
+
+  <!-- Stars / Embellishments -->
+  <polygon points="46,120 48,115 53,115 49,112 51,107 46,110 41,107 43,112 39,115 44,115" fill="#FFB300" />
+  <polygon points="194,120 196,115 201,115 197,112 199,107 194,110 189,107 191,112 187,115 192,115" fill="#FFB300" />
+</svg>

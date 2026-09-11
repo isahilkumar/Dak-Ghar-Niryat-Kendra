@@ -1,0 +1,116 @@
+@model List<DakGharNiryatKendra.Models.ExportConsignment>
+@{
+    ViewData["Title"] = "Create FPO Dispatch Bag & Manifest";
+    var staff = ViewBag.Staff as User;
+    var center = ViewBag.Center as DnkCenter;
+}
+
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-1 rounded-pill fw-bold">Office of Exchange Linkage</span>
+            <h1 class="h3 fw-bold text-dark mt-1 mb-0">Create FPO Bagging & Dispatch Manifest</h1>
+            <p class="text-muted small mb-0">Aggregate inducted export articles into a secured mail container bag dispatched to the Foreign Post Office (FPO).</p>
+        </div>
+        <div>
+            <a asp-controller="PostalStaff" asp-action="Dashboard" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Back to Counter
+            </a>
+        </div>
+    </div>
+
+    <form asp-controller="PostalStaff" asp-action="CreateManifest" method="post">
+        <input type="hidden" name="originCenterId" value="@(center?.Id ?? 1)" />
+
+        <div class="row g-4">
+            <!-- Left Side: Article Selection -->
+            <div class="col-lg-8">
+                <div class="dnk-card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <h2 class="h5 fw-bold text-dark mb-0">Inducted Articles Ready for Bagging</h2>
+                        <span class="badge bg-secondary">@Model.Count Available</span>
+                    </div>
+
+                    @if (Model.Count == 0)
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <div class="fs-2 mb-2"><i class="bi bi-inbox"></i></div>
+                            <h5>No inducted articles awaiting bagging</h5>
+                            <p>Induct articles at the counter scanner first to prepare a dispatch manifest.</p>
+                            <a asp-controller="PostalStaff" asp-action="Induction" class="btn btn-sm btn-dnk-saffron">Open Counter Scanner</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle small mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 40px;">
+                                            <input type="checkbox" id="selectAllArticles" class="form-check-input" checked onchange="document.querySelectorAll('.article-checkbox').forEach(cb => cb.checked = this.checked)" />
+                                        </th>
+                                        <th>Article S10</th>
+                                        <th>Exporter</th>
+                                        <th>Destination</th>
+                                        <th>Service</th>
+                                        <th class="text-end">Verified Weight</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var c in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" name="selectedConsignmentIds" value="@c.Id" class="form-check-input article-checkbox" checked />
+                                            </td>
+                                            <td class="font-monospace fw-bold text-danger">@c.TrackingNumber</td>
+                                            <td>@(c.Exporter?.BusinessName ?? c.Exporter?.FullName)</td>
+                                            <td>@c.RecipientCountry</td>
+                                            <td><span class="badge bg-light text-dark border">@c.ServiceType.ToString().Replace('_', ' ')</span></td>
+                                            <td class="text-end fw-bold">@((c.VerifiedWeightKg ?? c.ActualWeightKg).ToString("F2")) Kg</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Right Side: Bagging Details & Dispatch Button -->
+            <div class="col-lg-4">
+                <div class="dnk-card p-4 sticky-top" style="top: 100px;">
+                    <h3 class="h5 fw-bold text-dark mb-3 pb-2 border-bottom">Dispatch Bag Details</h3>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small text-dark">Origin DNK Center</label>
+                        <input type="text" class="form-control" value="@(center?.CenterName ?? "New Delhi GPO DNK")" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small text-dark">Destination Office of Exchange (FPO) *</label>
+                        <select name="destinationFpo" class="form-select">
+                            <option value="Delhi Foreign Post Office (FPO Kotla Road)" selected>Delhi Foreign Post Office (FPO Kotla Road)</option>
+                            <option value="Mumbai Foreign Post Office (Ballard Estate)">Mumbai Foreign Post Office (Ballard Estate)</option>
+                            <option value="Chennai Foreign Post Office (Meenambakkam)">Chennai Foreign Post Office (Meenambakkam)</option>
+                            <option value="Kolkata Foreign Post Office (Chinar Park)">Kolkata Foreign Post Office (Chinar Park)</option>
+                            <option value="Kochi Foreign Post Office (Willingdon Island)">Kochi Foreign Post Office (Willingdon Island)</option>
+                        </select>
+                    </div>
+
+                    <div class="p-3 bg-light rounded-3 border mb-3 small">
+                        <div class="mb-1"><i class="bi bi-shield-lock text-success me-1"></i><strong>Bag Barcode:</strong> Auto-generated UPU bag tag</div>
+                        <div><i class="bi bi-key text-warning me-1"></i><strong>Security Seal:</strong> Auto-generated numbered seal</div>
+                    </div>
+
+                    @if (Model.Count > 0)
+                    {
+                        <button type="submit" class="btn btn-dnk-primary btn-lg w-100 py-3 shadow font-weight-bold">
+                            <i class="bi bi-send-check me-2"></i> Seal Bag & Generate Manifest
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

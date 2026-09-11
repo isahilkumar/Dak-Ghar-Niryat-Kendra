@@ -1,0 +1,645 @@
+@model DakGharNiryatKendra.Models.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Create Account";
+    Layout = "_Layout";
+}
+
+<div class="auth-page-wrapper">
+    <div class="container">
+        <div class="row justify-content-center align-items-center" style="min-height: 85vh;">
+            <div class="col-xl-11 col-lg-12">
+                <div class="auth-container">
+                    <div class="row g-0">
+                        <!-- Left Panel: Branding & Benefits -->
+                        <div class="col-lg-4 d-none d-lg-block">
+                            <div class="auth-brand-panel auth-brand-panel-register">
+                                <div class="auth-brand-content">
+                                    <div class="auth-brand-logo">
+                                        <img src="/images/dak_ghar_logo.svg" alt="Dak Ghar Niryat Kendra Emblem" style="width: 54px; height: 54px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));" />
+                                        <div>
+                                            <span class="brand-text-main text-white" style="font-size:1.2rem;">Dak Ghar Niryat Kendra</span>
+                                            <span class="brand-text-sub d-block text-white-50" style="font-size:0.65rem;">India Post Export Portal</span>
+                                        </div>
+                                    </div>
+
+                                    <h2 class="auth-brand-title" style="font-size: 1.6rem;">
+                                        Start Exporting<br/>
+                                        <span class="highlight-gold">in Minutes</span>
+                                    </h2>
+                                    <p class="auth-brand-desc" style="font-size: 0.88rem;">
+                                        Register your MSME business and gain instant access to international markets through India Post's global network.
+                                    </p>
+
+                                    <div class="auth-features">
+                                        <div class="auth-feature-item">
+                                            <div class="auth-feature-icon" style="width:36px; height:36px; font-size:0.95rem;">
+                                                <i class="bi bi-lightning-charge-fill"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Instant Activation</strong>
+                                                <span>Start shipping immediately</span>
+                                            </div>
+                                        </div>
+                                        <div class="auth-feature-item">
+                                            <div class="auth-feature-icon" style="width:36px; height:36px; font-size:0.95rem;">
+                                                <i class="bi bi-cash-stack"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Zero Registration Fee</strong>
+                                                <span>Completely free to join</span>
+                                            </div>
+                                        </div>
+                                        <div class="auth-feature-item">
+                                            <div class="auth-feature-icon" style="width:36px; height:36px; font-size:0.95rem;">
+                                                <i class="bi bi-file-earmark-check"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Digital e-PBE</strong>
+                                                <span>No paperwork required</span>
+                                            </div>
+                                        </div>
+                                        <div class="auth-feature-item">
+                                            <div class="auth-feature-icon" style="width:36px; height:36px; font-size:0.95rem;">
+                                                <i class="bi bi-headset"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Dedicated Support</strong>
+                                                <span>1800-266-6868 (Toll-Free)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="auth-brand-badges mt-3">
+                                        <span class="auth-brand-badge">
+                                            <i class="bi bi-building"></i> Govt. of India
+                                        </span>
+                                        <span class="auth-brand-badge">
+                                            <i class="bi bi-globe"></i> 190+ Countries
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="auth-brand-pattern"></div>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Registration Form -->
+                        <div class="col-lg-8">
+                            <div class="auth-form-panel auth-form-panel-register">
+                                <!-- Mobile brand header -->
+                                <div class="d-lg-none text-center mb-3">
+                                    <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+                                        <div class="emblem-box" style="width:36px; height:36px; font-size:1rem;">
+                                            <i class="bi bi-send-fill"></i>
+                                        </div>
+                                        <span class="brand-text-main" style="font-size:1rem;">Dak Ghar Niryat Kendra</span>
+                                    </div>
+                                </div>
+
+                                <div class="auth-form-header">
+                                    <span class="auth-form-badge">
+                                        <i class="bi bi-person-plus-fill"></i> MSME Onboarding
+                                    </span>
+                                    <h1 class="auth-form-title">Create Your Account</h1>
+                                    <p class="auth-form-subtitle">Register as an MSME Exporter and start shipping internationally through your local post office.</p>
+                                </div>
+
+                                <!-- Global error display -->
+                                @if (!ViewData.ModelState.IsValid && ViewData.ModelState[""]?.Errors.Count > 0)
+                                {
+                                    <div class="auth-error-banner" id="registerErrorBanner">
+                                        <i class="bi bi-exclamation-octagon-fill"></i>
+                                        <span>@ViewData.ModelState[""]!.Errors[0].ErrorMessage</span>
+                                    </div>
+                                }
+
+                                <form asp-controller="Account" asp-action="Register" method="post" id="registerForm" novalidate>
+                                    <!-- Step Progress -->
+                                    <div class="register-step-indicator">
+                                        <div class="register-step active" id="stepIndicator1">
+                                            <div class="step-dot">1</div>
+                                            <span>Account</span>
+                                        </div>
+                                        <div class="register-step-line"></div>
+                                        <div class="register-step" id="stepIndicator2">
+                                            <div class="step-dot">2</div>
+                                            <span>Business</span>
+                                        </div>
+                                        <div class="register-step-line"></div>
+                                        <div class="register-step" id="stepIndicator3">
+                                            <div class="step-dot">3</div>
+                                            <span>Confirm</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 1: Account Information -->
+                                    <div class="register-step-panel" id="step1">
+                                        <h3 class="register-step-title">
+                                            <i class="bi bi-person-badge text-danger"></i> Account Information
+                                        </h3>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <div class="auth-input-group mb-0">
+                                                    <label class="auth-label" for="Username">
+                                                        <i class="bi bi-person"></i> Username <span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="auth-input-wrapper">
+                                                        <i class="bi bi-at auth-input-icon"></i>
+                                                        <input asp-for="Username" 
+                                                               class="auth-input" 
+                                                               id="Username"
+                                                               placeholder="e.g. jaipurcrafts"
+                                                               autocomplete="username" />
+                                                        <span class="auth-check-icon d-none" id="usernameCheckIcon"></span>
+                                                    </div>
+                                                    <span asp-validation-for="Username" class="auth-validation-msg"></span>
+                                                    <span class="auth-availability-msg" id="usernameAvailability"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="auth-input-group mb-0">
+                                                    <label class="auth-label" for="FullName">
+                                                        <i class="bi bi-person-vcard"></i> Full Name <span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="auth-input-wrapper">
+                                                        <i class="bi bi-type auth-input-icon"></i>
+                                                        <input asp-for="FullName" 
+                                                               class="auth-input" 
+                                                               id="FullName"
+                                                               placeholder="e.g. Ramesh Kumar"
+                                                               autocomplete="name" />
+                                                    </div>
+                                                    <span asp-validation-for="FullName" class="auth-validation-msg"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="auth-input-group mb-0">
+                                                    <label class="auth-label" for="Email">
+                                                        <i class="bi bi-envelope"></i> Email Address <span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="auth-input-wrapper">
+                                                        <i class="bi bi-envelope auth-input-icon"></i>
+                                                        <input asp-for="Email" 
+                                                               class="auth-input" 
+                                                               id="Email"
+                                                               type="email"
+                                                               placeholder="exports@mybusiness.in"
+                                                               autocomplete="email" />
+                                                        <span class="auth-check-icon d-none" id="emailCheckIcon"></span>
+                                                    </div>
+                                                    <span asp-validation-for="Email" class="auth-validation-msg"></span>
+                                                    <span class="auth-availability-msg" id="emailAvailability"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="auth-input-group mb-0">
+                                                    <label class="auth-label" for="PhoneNumber">
+                                                        <i class="bi bi-phone"></i> Mobile Number <span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="auth-input-wrapper">
+                                                        <i class="bi bi-telephone auth-input-icon"></i>
+                                                        <input asp-for="PhoneNumber" 
+                                                               class="auth-input" 
+                                                               id="PhoneNumber"
+                                                               placeholder="+91 98765 43210"
+                                                               autocomplete="tel" />
+                                                    </div>
+                                                    <span asp-validation-for="PhoneNumber" class="auth-validation-msg"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="auth-input-group mb-0">
+                                                    <label class="auth-label" for="Password">
+                                                        <i class="bi bi-lock"></i> Password <span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="auth-input-wrapper">
+                                                        <i class="bi bi-key auth-input-icon"></i>
+                                                        <input asp-for="Password" 
+                                                               class="auth-input" 
+                                                               id="RegPassword"
+                                                               type="password"
+                                                               placeholder="Min. 6 characters"
+                                                               autocomplete="new-password" />
+                                                        <button type="button" class="auth-toggle-password" onclick="togglePasswordVisibility('RegPassword', this)" tabindex="-1">
+                                                            <i class="bi bi-eye"></i>
+                                                        </button>
+                                                    </div>
+                                                    <span asp-validation-for="Password" class="auth-validation-msg"></span>
+                                                    <!-- Password strength indicator -->
+                                                    <div class="password-strength" id="passwordStrength">
+                                                        <div class="password-strength-bar">
+                                                            <div class="password-strength-fill" id="passwordStrengthFill"></div>
+                                                        </div>
+                                                        <span class="password-strength-text" id="passwordStrengthText"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="auth-input-group mb-0">
+                                                    <label class="auth-label" for="ConfirmPassword">
+                                                        <i class="bi bi-lock-fill"></i> Confirm Password <span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="auth-input-wrapper">
+                                                        <i class="bi bi-shield-lock auth-input-icon"></i>
+                                                        <input asp-for="ConfirmPassword" 
+                                                               class="auth-input" 
+                                                               id="ConfirmPassword"
+                                                               type="password"
+                                                               placeholder="Re-enter password"
+                                                               autocomplete="new-password" />
+                                                        <button type="button" class="auth-toggle-password" onclick="togglePasswordVisibility('ConfirmPassword', this)" tabindex="-1">
+                                                            <i class="bi bi-eye"></i>
+                                                        </button>
+                                                    </div>
+                                                    <span asp-validation-for="ConfirmPassword" class="auth-validation-msg"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="register-step-actions">
+                                            <div></div>
+                                            <button type="button" class="btn btn-dnk-primary px-4 py-2" onclick="showStep(2)">
+                                                Continue <i class="bi bi-arrow-right ms-1"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 2: Business Details -->
+                                    <div class="register-step-panel d-none" id="step2">
+                                        <h3 class="register-step-title">
+                                            <i class="bi bi-briefcase text-warning"></i> Business Details
+                                            <span class="badge bg-secondary bg-opacity-10 text-secondary small ms-2">Optional</span>
+                                        </h3>
+
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <div class="auth-input-group mb-0">
+                                                    <label class="auth-label" for="BusinessName">
+                                                        <i class="bi bi-shop"></i> Business / Firm / Cooperative Name
+                                                    </label>
+                                                    <div class="auth-input-wrapper">
+                                                        <i class="bi bi-building auth-input-icon"></i>
+                                                        <input asp-for="BusinessName" 
+                                                               class="auth-input" 
+                                                               id="BusinessName"
+                                                               placeholder="e.g. Rajasthan Handloom Artisans Guild LLP" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="auth-input-group mb-0">
+                                                    <label class="auth-label" for="IecNumber">
+                                                        <i class="bi bi-upc-scan"></i> IEC Number
+                                                    </label>
+                                                    <div class="auth-input-wrapper">
+                                                        <i class="bi bi-hash auth-input-icon"></i>
+                                                        <input asp-for="IecNumber" 
+                                                               class="auth-input font-monospace" 
+                                                               id="IecNumber"
+                                                               placeholder="10-digit IEC"
+                                                               maxlength="10" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="auth-input-group mb-0">
+                                                    <label class="auth-label" for="Gstin">
+                                                        <i class="bi bi-receipt"></i> GSTIN
+                                                    </label>
+                                                    <div class="auth-input-wrapper">
+                                                        <i class="bi bi-hash auth-input-icon"></i>
+                                                        <input asp-for="Gstin" 
+                                                               class="auth-input font-monospace" 
+                                                               id="Gstin"
+                                                               placeholder="15-digit GSTIN"
+                                                               maxlength="15" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="auth-input-group mb-0">
+                                                    <label class="auth-label" for="LutNumber">
+                                                        <i class="bi bi-file-text"></i> LUT Reference
+                                                    </label>
+                                                    <div class="auth-input-wrapper">
+                                                        <i class="bi bi-hash auth-input-icon"></i>
+                                                        <input asp-for="LutNumber" 
+                                                               class="auth-input font-monospace" 
+                                                               id="LutNumber"
+                                                               placeholder="e.g. AD080326001923K" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="auth-input-group mb-0">
+                                                    <label class="auth-label" for="Address">
+                                                        <i class="bi bi-geo-alt"></i> Business Address
+                                                    </label>
+                                                    <div class="auth-input-wrapper">
+                                                        <i class="bi bi-pin-map auth-input-icon"></i>
+                                                        <input asp-for="Address" 
+                                                               class="auth-input" 
+                                                               id="Address"
+                                                               placeholder="Workshop / Factory address" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="auth-input-group mb-0">
+                                                    <label class="auth-label" for="City">
+                                                        <i class="bi bi-geo"></i> City
+                                                    </label>
+                                                    <div class="auth-input-wrapper">
+                                                        <i class="bi bi-pin auth-input-icon"></i>
+                                                        <input asp-for="City" class="auth-input" id="City" placeholder="City" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="auth-input-group mb-0">
+                                                    <label class="auth-label" for="State">
+                                                        <i class="bi bi-map"></i> State
+                                                    </label>
+                                                    <div class="auth-input-wrapper">
+                                                        <i class="bi bi-pin auth-input-icon"></i>
+                                                        <input asp-for="State" class="auth-input" id="State" placeholder="State" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="auth-input-group mb-0">
+                                                    <label class="auth-label" for="Pincode">
+                                                        <i class="bi bi-mailbox2"></i> Pincode
+                                                    </label>
+                                                    <div class="auth-input-wrapper">
+                                                        <i class="bi bi-hash auth-input-icon"></i>
+                                                        <input asp-for="Pincode" class="auth-input font-monospace" id="Pincode" placeholder="6-digit PIN" maxlength="6" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="register-step-actions">
+                                            <button type="button" class="btn btn-outline-secondary px-4 py-2" onclick="showStep(1)">
+                                                <i class="bi bi-arrow-left me-1"></i> Back
+                                            </button>
+                                            <button type="button" class="btn btn-dnk-primary px-4 py-2" onclick="showStep(3)">
+                                                Continue <i class="bi bi-arrow-right ms-1"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 3: Confirmation -->
+                                    <div class="register-step-panel d-none" id="step3">
+                                        <h3 class="register-step-title">
+                                            <i class="bi bi-check-circle text-success"></i> Review & Confirm
+                                        </h3>
+
+                                        <div class="auth-review-card">
+                                            <div class="auth-review-row">
+                                                <span class="auth-review-label"><i class="bi bi-person"></i> Username</span>
+                                                <span class="auth-review-value" id="reviewUsername">—</span>
+                                            </div>
+                                            <div class="auth-review-row">
+                                                <span class="auth-review-label"><i class="bi bi-person-vcard"></i> Full Name</span>
+                                                <span class="auth-review-value" id="reviewFullName">—</span>
+                                            </div>
+                                            <div class="auth-review-row">
+                                                <span class="auth-review-label"><i class="bi bi-envelope"></i> Email</span>
+                                                <span class="auth-review-value" id="reviewEmail">—</span>
+                                            </div>
+                                            <div class="auth-review-row">
+                                                <span class="auth-review-label"><i class="bi bi-telephone"></i> Phone</span>
+                                                <span class="auth-review-value" id="reviewPhone">—</span>
+                                            </div>
+                                            <div class="auth-review-row" id="reviewBusinessRow" style="display:none;">
+                                                <span class="auth-review-label"><i class="bi bi-building"></i> Business</span>
+                                                <span class="auth-review-value" id="reviewBusiness">—</span>
+                                            </div>
+                                            <div class="auth-review-row" id="reviewIecRow" style="display:none;">
+                                                <span class="auth-review-label"><i class="bi bi-upc-scan"></i> IEC</span>
+                                                <span class="auth-review-value font-monospace" id="reviewIec">—</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-check my-4">
+                                            <input asp-for="AgreeToTerms" class="form-check-input" type="checkbox" id="AgreeToTerms" />
+                                            <label class="form-check-label small text-muted" for="AgreeToTerms">
+                                                I agree to the <a href="/Home/Guidelines" class="text-danger fw-bold">Department of Posts Postal Export Terms & Conditions</a> 
+                                                and certify that the information provided is accurate and genuine.
+                                            </label>
+                                            <span asp-validation-for="AgreeToTerms" class="auth-validation-msg d-block"></span>
+                                        </div>
+
+                                        <div class="register-step-actions">
+                                            <button type="button" class="btn btn-outline-secondary px-4 py-2" onclick="showStep(2)">
+                                                <i class="bi bi-arrow-left me-1"></i> Back
+                                            </button>
+                                            <button type="submit" class="btn btn-dnk-primary px-5 py-3 fw-bold auth-submit-btn" id="registerSubmitBtn">
+                                                <span class="auth-btn-text">
+                                                    <i class="bi bi-check-circle-fill me-1"></i> Create MSME Account
+                                                </span>
+                                                <span class="auth-btn-loader d-none">
+                                                    <span class="spinner-border spinner-border-sm me-2"></span> Creating Account...
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <!-- Login Link -->
+                                <div class="auth-footer-link">
+                                    <span>Already have an account?</span>
+                                    <a asp-controller="Account" asp-action="Login">
+                                        <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Toggle password visibility
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'bi bi-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'bi bi-eye';
+            }
+        }
+
+        // Multi-step form navigation
+        function showStep(stepNum) {
+            // Hide all steps
+            document.querySelectorAll('.register-step-panel').forEach(p => p.classList.add('d-none'));
+            // Show target step
+            document.getElementById('step' + stepNum)?.classList.remove('d-none');
+            
+            // Update step indicators
+            for (let i = 1; i <= 3; i++) {
+                const indicator = document.getElementById('stepIndicator' + i);
+                if (indicator) {
+                    indicator.classList.remove('active', 'completed');
+                    if (i < stepNum) indicator.classList.add('completed');
+                    if (i === stepNum) indicator.classList.add('active');
+                }
+            }
+
+            // If showing review step, populate review
+            if (stepNum === 3) {
+                populateReview();
+            }
+
+            // Scroll to top of form
+            document.querySelector('.auth-form-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function populateReview() {
+            document.getElementById('reviewUsername').textContent = document.getElementById('Username')?.value || '—';
+            document.getElementById('reviewFullName').textContent = document.getElementById('FullName')?.value || '—';
+            document.getElementById('reviewEmail').textContent = document.getElementById('Email')?.value || '—';
+            document.getElementById('reviewPhone').textContent = document.getElementById('PhoneNumber')?.value || '—';
+            
+            const business = document.getElementById('BusinessName')?.value;
+            if (business) {
+                document.getElementById('reviewBusiness').textContent = business;
+                document.getElementById('reviewBusinessRow').style.display = '';
+            }
+            
+            const iec = document.getElementById('IecNumber')?.value;
+            if (iec) {
+                document.getElementById('reviewIec').textContent = iec;
+                document.getElementById('reviewIecRow').style.display = '';
+            }
+        }
+
+        // Password strength indicator
+        document.getElementById('RegPassword')?.addEventListener('input', function() {
+            const password = this.value;
+            const strengthFill = document.getElementById('passwordStrengthFill');
+            const strengthText = document.getElementById('passwordStrengthText');
+            const strengthContainer = document.getElementById('passwordStrength');
+            
+            if (!password) {
+                strengthContainer.style.display = 'none';
+                return;
+            }
+            strengthContainer.style.display = 'flex';
+
+            let strength = 0;
+            if (password.length >= 6) strength++;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+            const levels = [
+                { width: '20%', color: '#ef4444', text: 'Very Weak' },
+                { width: '40%', color: '#f97316', text: 'Weak' },
+                { width: '60%', color: '#eab308', text: 'Fair' },
+                { width: '80%', color: '#22c55e', text: 'Strong' },
+                { width: '100%', color: '#16a34a', text: 'Very Strong' }
+            ];
+
+            const level = levels[Math.min(strength, 4)];
+            strengthFill.style.width = level.width;
+            strengthFill.style.background = level.color;
+            strengthText.textContent = level.text;
+            strengthText.style.color = level.color;
+        });
+
+        // Real-time username availability check
+        let usernameTimeout;
+        document.getElementById('Username')?.addEventListener('input', function() {
+            clearTimeout(usernameTimeout);
+            const username = this.value.trim();
+            const msgEl = document.getElementById('usernameAvailability');
+            const iconEl = document.getElementById('usernameCheckIcon');
+            
+            if (username.length < 3) {
+                msgEl.textContent = '';
+                iconEl.classList.add('d-none');
+                return;
+            }
+
+            usernameTimeout = setTimeout(async () => {
+                try {
+                    const res = await fetch(`/Account/CheckUsername?username=${encodeURIComponent(username)}`);
+                    const data = await res.json();
+                    msgEl.textContent = data.message;
+                    iconEl.classList.remove('d-none');
+                    if (data.available) {
+                        msgEl.className = 'auth-availability-msg text-success';
+                        iconEl.innerHTML = '<i class="bi bi-check-circle-fill text-success"></i>';
+                    } else {
+                        msgEl.className = 'auth-availability-msg text-danger';
+                        iconEl.innerHTML = '<i class="bi bi-x-circle-fill text-danger"></i>';
+                    }
+                } catch (e) { /* ignore */ }
+            }, 500);
+        });
+
+        // Real-time email availability check
+        let emailTimeout;
+        document.getElementById('Email')?.addEventListener('input', function() {
+            clearTimeout(emailTimeout);
+            const email = this.value.trim();
+            const msgEl = document.getElementById('emailAvailability');
+            const iconEl = document.getElementById('emailCheckIcon');
+            
+            if (!email || !email.includes('@@')) {
+                msgEl.textContent = '';
+                iconEl.classList.add('d-none');
+                return;
+            }
+
+            emailTimeout = setTimeout(async () => {
+                try {
+                    const res = await fetch(`/Account/CheckEmail?email=${encodeURIComponent(email)}`);
+                    const data = await res.json();
+                    msgEl.textContent = data.message;
+                    iconEl.classList.remove('d-none');
+                    if (data.available) {
+                        msgEl.className = 'auth-availability-msg text-success';
+                        iconEl.innerHTML = '<i class="bi bi-check-circle-fill text-success"></i>';
+                    } else {
+                        msgEl.className = 'auth-availability-msg text-danger';
+                        iconEl.innerHTML = '<i class="bi bi-x-circle-fill text-danger"></i>';
+                    }
+                } catch (e) { /* ignore */ }
+            }, 500);
+        });
+
+        // Submit loading state
+        document.getElementById('registerForm')?.addEventListener('submit', function(e) {
+            const btn = document.getElementById('registerSubmitBtn');
+            const btnText = btn.querySelector('.auth-btn-text');
+            const btnLoader = btn.querySelector('.auth-btn-loader');
+            
+            btnText.classList.add('d-none');
+            btnLoader.classList.remove('d-none');
+            btn.disabled = true;
+        });
+
+        // Floating label effect
+        document.querySelectorAll('.auth-input').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.closest('.auth-input-wrapper')?.classList.add('focused');
+            });
+            input.addEventListener('blur', () => {
+                input.closest('.auth-input-wrapper')?.classList.remove('focused');
+            });
+        });
+    </script>
+}

@@ -1,0 +1,180 @@
+@model DakGharNiryatKendra.Models.ExportConsignment
+@{
+    ViewData["Title"] = $"Customs Scrutiny - {Model.PbeNumber}";
+    var officer = ViewBag.Officer as User;
+    var hsInfo = ViewBag.HsInfo as List<HsCodeDirectory> ?? new List<HsCodeDirectory>();
+    var barcodeSvg = ViewBag.BarcodeSvg as string;
+    var qrBase64 = ViewBag.QrCodeBase64 as string;
+}
+
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-1 rounded-pill fw-bold">Customs Postal Appraising Scrutiny</span>
+            <h1 class="h3 fw-bold text-dark mt-1 mb-0 font-monospace">@Model.PbeNumber</h1>
+            <p class="text-muted small mb-0">Article Tracking: <span class="font-monospace fw-bold text-danger">@Model.TrackingNumber</span> | Destination: <strong>@Model.RecipientCountry</strong></p>
+        </div>
+        <div>
+            <a asp-controller="Customs" asp-action="Dashboard" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Back to Queue
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Main Document Details -->
+        <div class="col-lg-8">
+            <!-- Exporter & Compliance Profile -->
+            <div class="dnk-card p-4 mb-4">
+                <h2 class="h5 fw-bold text-dark mb-3 pb-2 border-bottom">Exporter Legal Profile & KYC Scrutiny</h2>
+                <div class="row g-3 small">
+                    <div class="col-md-6">
+                        <span class="text-muted d-block">Exporter / Entity:</span>
+                        <span class="fw-bold fs-6 text-dark">@(Model.Exporter?.BusinessName ?? Model.Exporter?.FullName)</span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="text-muted d-block">IEC Number:</span>
+                        <span class="font-monospace fw-bold text-success"><i class="bi bi-patch-check-fill me-1"></i>@(Model.Exporter?.IecNumber)</span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="text-muted d-block">GSTIN Status:</span>
+                        <span class="font-monospace fw-bold text-dark">@(Model.Exporter?.Gstin)</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="text-muted d-block">LUT Status (Zero-Rated IGST):</span>
+                        <span class="font-monospace fw-bold text-primary">@(Model.LutNumber ?? "No LUT (Standard IGST)")</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="text-muted d-block">AD Code (Bank EDPMS):</span>
+                        <span class="font-monospace">@(Model.Exporter?.AdCode ?? "Registered")</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Itemized Declared Goods -->
+            <div class="dnk-card p-4 mb-4">
+                <h3 class="h5 fw-bold text-dark mb-3 pb-2 border-bottom">Itemized Goods & HS Code Tariff Assessment</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm align-middle small mb-3">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Item Description</th>
+                                <th>HS Code</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th>Total (INR)</th>
+                                <th>Compliance Risk</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int idx = 1; }
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>@(idx++)</td>
+                                    <td class="fw-semibold">@item.ItemDescription</td>
+                                    <td><span class="badge bg-light text-dark border font-monospace">@item.HsCode</span></td>
+                                    <td>@item.Quantity @item.UnitOfMeasurement</td>
+                                    <td>₹ @item.UnitPriceINR.ToString("N2")</td>
+                                    <td class="fw-bold">₹ @item.TotalPriceINR.ToString("N2")</td>
+                                    <td>
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                                            <i class="bi bi-shield-check me-1"></i> Low Risk (Green Channel)
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="fw-bold table-light">
+                            <tr>
+                                <td colspan="5" class="text-end">Total Declared FOB Value:</td>
+                                <td colspan="2" class="text-danger">₹ @Model.DeclaredValueINR.ToString("N2")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- Regulatory Document Advisory -->
+                @if (hsInfo.Count > 0)
+                {
+                    <div class="p-3 bg-light rounded-3 border small">
+                        <h6 class="fw-bold text-dark mb-1"><i class="bi bi-info-circle text-primary me-1"></i>HS Code Regulatory Directory Check</h6>
+                        @foreach (var h in hsInfo)
+                        {
+                            <div class="text-muted">
+                                <strong>HS @h.HsCode:</strong> Standard GST @h.StandardGstPercent% | RoDTEP Benefit: @h.RodtepRatePercent% | Required docs: @(h.RequiredDocuments ?? "Commercial Invoice, Packing List")
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Right Side: Customs Actions -->
+        <div class="col-lg-4">
+            <!-- Out of Charge (OOC) Clearance Card -->
+            <div class="dnk-card p-4 mb-4 border-start border-4 border-success">
+                <h3 class="h5 fw-bold text-success mb-2"><i class="bi bi-check-circle-fill me-1"></i> Grant Out of Charge (OOC)</h3>
+                <p class="text-muted small mb-3">Clear this consignment under Section 84 of the Customs Act, 1962 for immediate onward international air dispatch.</p>
+
+                <form asp-controller="Customs" asp-action="ApproveOoc" method="post">
+                    <input type="hidden" name="consignmentId" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Appraiser Clearance Remarks</label>
+                        <textarea name="remarks" class="form-control form-control-sm" rows="2" placeholder="Electronic PBE scrutinized and found in order. OOC granted."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-lg w-100 py-2 shadow-sm fw-bold">
+                        <i class="bi bi-shield-check me-1"></i> Grant Customs OOC Clearance
+                    </button>
+                </form>
+            </div>
+
+            <!-- Raise Query / Physical Inspection Card -->
+            <div class="dnk-card p-4 mb-4 border-start border-4 border-warning">
+                <h3 class="h6 fw-bold text-dark mb-2"><i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> Raise Scrutiny Query / Inspection</h3>
+                <p class="text-muted small mb-3">Place a temporary customs hold if supporting certification or valuation clarification is required.</p>
+
+                <form asp-controller="Customs" asp-action="RaiseQuery" method="post">
+                    <input type="hidden" name="consignmentId" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Query / Deficiency Reason</label>
+                        <textarea name="remarks" class="form-control form-control-sm" rows="2" placeholder="e.g. Please upload material test certificate or itemized valuation breakdown." required></textarea>
+                    </div>
+                    <div class="form-check mb-3 small">
+                        <input name="requirePhysicalInspection" class="form-check-input" type="checkbox" id="inspectionCheck" value="true" />
+                        <label class="form-check-label" for="inspectionCheck">
+                            Require physical examination at FPO inspection bay
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100 fw-bold">
+                        <i class="bi bi-chat-left-dots me-1"></i> Issue Customs Query
+                    </button>
+                </form>
+            </div>
+
+            <!-- Duty Assessment Card -->
+            <div class="dnk-card p-4 border-start border-4 border-primary">
+                <h3 class="h6 fw-bold text-dark mb-2"><i class="bi bi-cash-stack text-primary me-1"></i> Assess Export Tariff / Duty</h3>
+
+                <form asp-controller="Customs" asp-action="AssessDuty" method="post">
+                    <input type="hidden" name="consignmentId" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Duty Amount (INR)</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">₹</span>
+                            <input type="number" step="0.01" name="dutyAmount" class="form-control" value="0.00" required />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Assessment Remarks</label>
+                        <input type="text" name="remarks" class="form-control form-control-sm" placeholder="Reason for duty assessment" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">
+                        Assess Duty
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

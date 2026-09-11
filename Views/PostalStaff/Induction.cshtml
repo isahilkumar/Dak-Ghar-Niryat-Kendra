@@ -1,0 +1,86 @@
+@{
+    ViewData["Title"] = "Counter Induction & Weighment Scanner";
+    var scannedNumber = ViewBag.ScannedNumber as string;
+}
+
+<div class="container px-lg-4 py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <span class="badge bg-warning text-dark px-3 py-1 fw-bold rounded-pill">Counter Operations</span>
+                    <h1 class="h3 fw-bold text-dark mt-1 mb-0">Article Induction & Gross Weighment Scanner</h1>
+                </div>
+                <a asp-controller="PostalStaff" asp-action="Dashboard" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+                </a>
+            </div>
+
+            <!-- Interactive Barcode Scanner Simulation Card -->
+            <div class="dnk-card p-4 border-top border-4 border-warning shadow">
+                <div class="d-flex align-items-center gap-3 mb-4 p-3 bg-light rounded-3">
+                    <div class="emblem-box" style="width: 48px; height: 48px; background: #fef3c7; color: #d97706; font-size: 1.3rem;">
+                        <i class="bi bi-upc-scan"></i>
+                    </div>
+                    <div>
+                        <h2 class="h5 fw-bold text-dark mb-0">Barcode Scanner & Electronic Scale Simulation</h2>
+                        <p class="text-muted small mb-0">Point your handheld USB barcode scanner at the package label or manually enter the S10 Tracking Number.</p>
+                    </div>
+                </div>
+
+                <form asp-controller="PostalStaff" asp-action="PerformInduction" method="post" id="inductionForm" onsubmit="if(window.playScanChime) window.playScanChime();">
+                    <!-- Tracking Number Input -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark">Article Tracking Number / S10 Barcode *</label>
+                        <div class="input-group input-group-lg shadow-sm">
+                            <span class="input-group-text bg-white text-danger"><i class="bi bi-upc-scan fs-4"></i></span>
+                            <input type="text" name="trackingNumber" id="inductionTrackingInput" value="@scannedNumber" placeholder="Scan or enter Tracking No (e.g. EM419208374IN)" class="form-control mono-font fw-bold text-uppercase" required autofocus />
+                            <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('inductionTrackingInput').value='EM419208374IN'; if(window.playScanChime) window.playScanChime();">
+                                <i class="bi bi-magic"></i> Auto-Fill Sample
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Gross Weighment & Physical Dimensions -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark">Physical Verified Gross Weight (Kg) *</label>
+                            <div class="input-group input-group-lg">
+                                <input type="number" step="0.01" name="verifiedWeightKg" value="0.85" class="form-control fw-bold" required />
+                                <span class="input-group-text fw-bold">Kg</span>
+                            </div>
+                            <div class="form-text small">Calibrated Electronic Post Office Scale Reading</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark">Packaging Condition Verification *</label>
+                            <select class="form-select form-select-lg">
+                                <option value="TamperEvident" selected>Secure & Tamper-Evident Tape Applied</option>
+                                <option value="CustomsPouch">Commercial Invoice Inside Pouch</option>
+                                <option value="FragileSpecial">Fragile Label Verified</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Induction Action Button -->
+                    <button type="submit" class="btn btn-dnk-saffron btn-lg w-100 py-3 shadow font-weight-bold">
+                        <i class="bi bi-check2-circle fs-4 me-2"></i> Confirm Counter Induction & Print Slip
+                    </button>
+                </form>
+
+                <!-- Quick Test Numbers -->
+                <div class="mt-4 pt-3 border-top small">
+                    <span class="text-muted fw-semibold d-block mb-2">Pending Articles Ready for Counter Induction:</span>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-sm btn-light border" onclick="document.getElementById('inductionTrackingInput').value='EM419208374IN'; if(window.playScanChime) window.playScanChime();">
+                            EM419208374IN (Kashmir Pashmina - France)
+                        </button>
+                        <button type="button" class="btn btn-sm btn-light border" onclick="document.getElementById('inductionTrackingInput').value='CP771209384IN'; if(window.playScanChime) window.playScanChime();">
+                            CP771209384IN (Malabar Spices - UK)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,207 @@
+@model DakGharNiryatKendra.Models.ViewModels.RateCalculatorViewModel
+@{
+    ViewData["Title"] = "International Postage & Transit Time Calculator";
+    var countries = ViewBag.Countries as IEnumerable<dynamic> ?? new List<dynamic>();
+}
+
+<div class="container px-lg-4 py-5">
+    <div class="text-center mb-5">
+        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-1 rounded-pill fw-bold">Official Tariff Engine</span>
+        <h1 class="display-6 fw-bold text-dark mt-2">International Postage & Transit Calculator</h1>
+        <p class="text-muted mx-auto" style="max-width: 680px;">
+            Calculate accurate postal export charges, fuel surcharges, insurance coverage, and estimated transit days based on Department of Posts international tariff schedule.
+        </p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Input Parameters Card -->
+        <div class="col-lg-4">
+            <div class="dnk-card sticky-top" style="top: 100px;">
+                <h2 class="h5 fw-bold text-dark mb-3 pb-2 border-bottom d-flex align-items-center gap-2">
+                    <i class="bi bi-sliders text-danger"></i> Consignment Parameters
+                </h2>
+
+                <form method="get" asp-controller="Home" asp-action="Calculator" id="calculatorForm">
+                    <!-- Destination Country -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small text-dark">Destination Country</label>
+                        <select name="country" class="form-select" onchange="this.form.submit()">
+                            @foreach (var c in countries)
+                            {
+                                <option value="@c.CountryCode" selected="@(c.CountryCode == Model.DestinationCountryCode ? "selected" : null)">
+                                    @c.CountryName (@c.CountryCode)
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Gross Weight -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label fw-semibold small text-dark mb-0">Actual Gross Weight (Kg)</label>
+                            <span class="badge bg-danger fw-bold" id="weightDisplay">@Model.WeightKg.ToString("F2") Kg</span>
+                        </div>
+                        <input type="range" class="range-slider-dnk" min="0.1" max="25.0" step="0.1" value="@Model.WeightKg" id="weightSlider" name="weight" oninput="document.getElementById('weightDisplay').textContent = parseFloat(this.value).toFixed(2) + ' Kg';" onchange="this.form.submit()" />
+                    </div>
+
+                    <!-- Package Dimensions (cm) -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small text-dark">Package Dimensions (L x W x H in cm)</label>
+                        <div class="row g-2">
+                            <div class="col-4">
+                                <div class="input-group input-group-sm">
+                                    <input type="number" step="0.5" name="length" value="@Model.LengthCm" class="form-control" placeholder="L" title="Length in cm" onchange="this.form.submit()" />
+                                    <span class="input-group-text small">L</span>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="input-group input-group-sm">
+                                    <input type="number" step="0.5" name="width" value="@Model.WidthCm" class="form-control" placeholder="W" title="Width in cm" onchange="this.form.submit()" />
+                                    <span class="input-group-text small">W</span>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="input-group input-group-sm">
+                                    <input type="number" step="0.5" name="height" value="@Model.HeightCm" class="form-control" placeholder="H" title="Height in cm" onchange="this.form.submit()" />
+                                    <span class="input-group-text small">H</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-text small mt-1">
+                            Volumetric Formula: (L &times; W &times; H) / 5000
+                        </div>
+                    </div>
+
+                    <!-- Declared Value INR -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small text-dark">Declared Invoice Value (INR)</label>
+                        <div class="input-group">
+                            <span class="input-group-text fw-bold">₹</span>
+                            <input type="number" name="value" value="@Model.DeclaredValueINR" step="100" class="form-control fw-bold" onchange="this.form.submit()" />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-dnk-primary w-100 py-2">
+                        <i class="bi bi-arrow-repeat me-1"></i> Recalculate Postage
+                    </button>
+                </form>
+
+                <!-- Volumetric Analysis Alert -->
+                @{
+                    decimal volWt = (Model.LengthCm * Model.WidthCm * Model.HeightCm) / 5000m;
+                    decimal chgWt = Math.Max(Model.WeightKg, volWt);
+                }
+                <div class="mt-4 p-3 bg-light rounded-3 border small">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Actual Weight:</span>
+                        <span class="fw-bold">@Model.WeightKg.ToString("F2") Kg</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Volumetric Weight:</span>
+                        <span class="fw-bold">@volWt.ToString("F2") Kg</span>
+                    </div>
+                    <div class="d-flex justify-content-between border-top pt-1 text-danger fw-bold">
+                        <span>Chargeable Weight:</span>
+                        <span>@chgWt.ToString("F2") Kg</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calculated Service Options Grid -->
+        <div class="col-lg-8">
+            <h2 class="h5 fw-bold text-dark mb-3">Available India Post International Services</h2>
+
+            <div class="row g-3">
+                @foreach (var s in Model.CalculatedRates)
+                {
+                    <div class="col-12">
+                        <div class="dnk-card p-4 @(s.IsEligible ? "border-start border-4 border-danger" : "opacity-75 bg-light")">
+                            <div class="row align-items-center g-3">
+                                <div class="col-md-7">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <h3 class="h5 fw-bold text-dark mb-0">@s.ServiceName</h3>
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 small">@s.ServiceBadge</span>
+                                    </div>
+                                    <p class="text-muted small mb-2">@s.Description</p>
+
+                                    @if (s.IsEligible)
+                                    {
+                                        <div class="d-flex align-items-center gap-3 small text-secondary">
+                                            <span><i class="bi bi-clock-history text-warning me-1"></i>Transit: <strong>@s.EstimatedDaysMin - @s.EstimatedDaysMax Days</strong></span>
+                                            <span><i class="bi bi-box me-1"></i>Chargeable Wt: <strong>@s.ChargeableWeightKg.ToString("F2") Kg</strong></span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-danger small fw-semibold"><i class="bi bi-exclamation-triangle me-1"></i>@s.IneligibilityReason</div>
+                                    }
+                                </div>
+
+                                <div class="col-md-5 text-md-end">
+                                    @if (s.IsEligible)
+                                    {
+                                        <div class="mb-2">
+                                            <span class="text-muted small d-block">Estimated Total Cost (inc. GST):</span>
+                                            <span class="fs-3 fw-extrabold text-danger brand-font">₹ @s.TotalCostINR.ToString("N2")</span>
+                                        </div>
+
+                                        <!-- Breakdown Accordion Button -->
+                                        <button type="button" class="btn btn-sm btn-outline-secondary me-2" data-bs-toggle="collapse" data-bs-target="#breakdown-@((int)s.ServiceType)">
+                                            <i class="bi bi-receipt"></i> Breakdown
+                                        </button>
+
+                                        <a asp-controller="Exporter" asp-action="Book" class="btn btn-sm btn-dnk-primary">
+                                            <i class="bi bi-arrow-right"></i> Book Now
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Not Available</span>
+                                    }
+                                </div>
+
+                                <!-- Collapsible Tax & Fuel Breakdown -->
+                                @if (s.IsEligible)
+                                {
+                                    <div class="col-12 collapse" id="breakdown-@((int)s.ServiceType)">
+                                        <div class="p-3 bg-light rounded-3 border small mt-2">
+                                            <h6 class="fw-bold text-dark border-bottom pb-1 mb-2">Detailed Fee Breakdown</h6>
+                                            <div class="row g-2">
+                                                <div class="col-6 col-md-3">
+                                                    <span class="text-muted d-block">Base Postage:</span>
+                                                    <span class="fw-bold">₹ @s.BasePostageINR.ToString("N2")</span>
+                                                </div>
+                                                <div class="col-6 col-md-3">
+                                                    <span class="text-muted d-block">Fuel Surcharge (10%):</span>
+                                                    <span class="fw-bold">₹ @s.FuelSurchargeINR.ToString("N2")</span>
+                                                </div>
+                                                <div class="col-6 col-md-3">
+                                                    <span class="text-muted d-block">Insurance Coverage:</span>
+                                                    <span class="fw-bold">₹ @s.InsuranceINR.ToString("N2")</span>
+                                                </div>
+                                                <div class="col-6 col-md-3">
+                                                    <span class="text-muted d-block">GST (18%):</span>
+                                                    <span class="fw-bold text-danger">₹ @s.GstINR.ToString("N2")</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Notes on Custom Duties & Customs Clearance -->
+            <div class="alert alert-info mt-4 small border-0 shadow-sm d-flex gap-2">
+                <i class="bi bi-info-circle-fill fs-5 text-info"></i>
+                <div>
+                    <strong>Important Note on Customs & Destination Taxes:</strong>
+                    Postal rates computed above cover international air freight, handling, and induction charges. Import duties and taxes at the destination country (if assessed by destination customs authorities) may be applicable upon delivery to the consignee.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

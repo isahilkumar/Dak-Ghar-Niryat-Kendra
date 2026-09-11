@@ -1,0 +1,227 @@
+@{
+    ViewData["Title"] = "Enterprise Database & SQL Management Console";
+    var dbProvider = ViewBag.DbProvider as string ?? "Sqlite";
+    var dbName = ViewBag.DatabaseName as string ?? "dnk_portal.db";
+    var canConnect = (bool)(ViewBag.CanConnect ?? true);
+}
+
+<div class="container-fluid px-lg-4 py-4">
+    <!-- Top Header -->
+    <div class="p-4 rounded-4 bg-white border shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="emblem-box" style="width: 54px; height: 54px; font-size: 1.5rem; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+                    <i class="bi bi-database-fill-gear"></i>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center gap-2">
+                        <h1 class="h4 fw-bold text-dark mb-0">Enterprise SQL Database Architecture</h1>
+                        <span class="badge @(canConnect ? "bg-success" : "bg-danger")">
+                            <i class="bi bi-circle-fill me-1" style="font-size: 8px;"></i> @(canConnect ? "Online & Healthy" : "Offline")
+                        </span>
+                    </div>
+                    <div class="text-muted small mt-1">
+                        <strong>Active Provider:</strong> <span class="badge bg-dark font-monospace">@dbProvider</span> | 
+                        <strong>Catalog:</strong> <span class="font-monospace text-dark">@dbName</span> | 
+                        <strong>ORM:</strong> Entity Framework Core 10 &bull; Multi-Schema T-SQL & PostgreSQL Architecture
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <a href="#scriptsSection" class="btn btn-dnk-primary btn-sm">
+                    <i class="bi bi-code-square me-1"></i> View Enterprise T-SQL Scripts
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Relational Table Statistics Grid -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="dnk-card p-3 border-start border-4 border-danger h-100">
+                <div class="text-muted small fw-semibold text-uppercase">[Export].[ExportConsignments]</div>
+                <div class="fs-2 fw-bold text-dark brand-font mt-1">@ViewBag.ConsignmentCount</div>
+                <div class="text-muted small">PBE-I & PBE-II Records</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="dnk-card p-3 border-start border-4 border-warning h-100">
+                <div class="text-muted small fw-semibold text-uppercase">[Tracking].[TrackingMilestones]</div>
+                <div class="fs-2 fw-bold text-warning brand-font mt-1">@ViewBag.MilestoneCount</div>
+                <div class="text-muted small">S10 Journey Events</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="dnk-card p-3 border-start border-4 border-primary h-100">
+                <div class="text-muted small fw-semibold text-uppercase">[Identity].[Users]</div>
+                <div class="fs-2 fw-bold text-primary brand-font mt-1">@ViewBag.UserCount</div>
+                <div class="text-muted small">Exporters, Staff, Customs</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="dnk-card p-3 border-start border-4 border-success h-100">
+                <div class="text-muted small fw-semibold text-uppercase">[Master].[DnkCenters]</div>
+                <div class="fs-2 fw-bold text-success brand-font mt-1">@ViewBag.DnkCenterCount</div>
+                <div class="text-muted small">Pan-India Postal Kendras</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="dnk-card p-3 border-start border-4 border-info h-100">
+                <div class="text-muted small fw-semibold text-uppercase">[Master].[HsCodeDirectories]</div>
+                <div class="fs-2 fw-bold text-info brand-font mt-1">@ViewBag.HsCodeCount</div>
+                <div class="text-muted small">Harmonized System Codes</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="dnk-card p-3 border-start border-4 border-secondary h-100">
+                <div class="text-muted small fw-semibold text-uppercase">[Master].[TariffZones]</div>
+                <div class="fs-2 fw-bold text-secondary brand-font mt-1">@ViewBag.TariffCount</div>
+                <div class="text-muted small">210+ Postal Zones</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schema Architecture Breakdown -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-12">
+            <div class="dnk-card p-4">
+                <h2 class="h5 fw-bold text-dark mb-3 pb-2 border-bottom d-flex align-items-center gap-2">
+                    <i class="bi bi-diagram-3 text-danger"></i> Enterprise Relational Schema Architecture
+                </h2>
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded-3 border h-100">
+                            <h6 class="fw-bold text-danger mb-2"><i class="bi bi-box me-1"></i> Schema: [Export]</h6>
+                            <ul class="small list-unstyled mb-0">
+                                <li><strong>ExportConsignments:</strong> Primary export entity with S10 Barcode, PBE-I/PBE-II, gross & volumetric weighment, and valuation.</li>
+                                <li><strong>ConsignmentItems:</strong> 1-to-N line items with Harmonized System (HS) code classification and FOB prices.</li>
+                                <li><strong>PickupRequests:</strong> Doorstep collection dispatch queue.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded-3 border h-100">
+                            <h6 class="fw-bold text-warning text-dark mb-2"><i class="bi bi-radar me-1"></i> Schema: [Tracking] & [Postal]</h6>
+                            <ul class="small list-unstyled mb-0">
+                                <li><strong>TrackingMilestones:</strong> Reverse-chronological event timeline with UPU facility stamps, status headlines, and inspection logs.</li>
+                                <li><strong>DispatchManifests:</strong> FPO container bag consolidation with seal numbers and barcode tags.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded-3 border h-100">
+                            <h6 class="fw-bold text-primary mb-2"><i class="bi bi-globe me-1"></i> Schema: [Master] & [Identity]</h6>
+                            <ul class="small list-unstyled mb-0">
+                                <li><strong>Users:</strong> Exporters (with IEC/GSTIN/LUT/AD Code), Nodal Staff, Customs Appraisers, and Administrators.</li>
+                                <li><strong>DnkCenters:</strong> Kendra GPS coordinates and facilities.</li>
+                                <li><strong>TariffZones:</strong> Weight increment rates & transit days.</li>
+                                <li><strong>HsCodeDirectories:</strong> RoDTEP incentives & compliance.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enterprise SQL Script Viewer with Tabs -->
+    <div class="dnk-card p-4" id="scriptsSection">
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom flex-wrap gap-2">
+            <div>
+                <h2 class="h5 fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-file-earmark-code text-danger"></i> Production SQL Scripts & DDL Repository
+                </h2>
+                <p class="text-muted small mb-0">Inspect and copy production-grade T-SQL (MSSQL) and PostgreSQL scripts</p>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs mb-3" id="sqlTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-bold small" id="ddl-tab" data-bs-toggle="tab" data-bs-target="#ddl" type="button" role="tab">
+                    <i class="bi bi-table me-1 text-danger"></i> 01. Schema DDL (MSSQL)
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold small" id="sp-tab" data-bs-toggle="tab" data-bs-target="#sp" type="button" role="tab">
+                    <i class="bi bi-gear-fill me-1 text-warning"></i> 02. Stored Procedures
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold small" id="views-tab" data-bs-toggle="tab" data-bs-target="#views" type="button" role="tab">
+                    <i class="bi bi-eye-fill me-1 text-primary"></i> 03. Views & Functions
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold small" id="seed-tab" data-bs-toggle="tab" data-bs-target="#seed" type="button" role="tab">
+                    <i class="bi bi-database-fill-add me-1 text-success"></i> 04. Seed Data (MSSQL)
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold small" id="pg-tab" data-bs-toggle="tab" data-bs-target="#pg" type="button" role="tab">
+                    <i class="bi bi-database me-1 text-info"></i> 05. PostgreSQL DDL
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="sqlTabsContent">
+            <!-- Tab 1: DDL -->
+            <div class="tab-pane fade show active" id="ddl" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-secondary font-monospace">01_Schema_DDL_MSSQL.sql</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard(document.getElementById('ddlCode').innerText, this)">
+                        <i class="bi bi-clipboard"></i> Copy Script
+                    </button>
+                </div>
+                <pre class="bg-dark text-light p-3 rounded-3 small mono-font" style="max-height: 480px; overflow-y: auto;" id="ddlCode">@ViewBag.SchemaScript</pre>
+            </div>
+
+            <!-- Tab 2: Stored Procedures -->
+            <div class="tab-pane fade" id="sp" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-secondary font-monospace">02_Stored_Procedures_MSSQL.sql</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard(document.getElementById('spCode').innerText, this)">
+                        <i class="bi bi-clipboard"></i> Copy Script
+                    </button>
+                </div>
+                <pre class="bg-dark text-light p-3 rounded-3 small mono-font" style="max-height: 480px; overflow-y: auto;" id="spCode">@ViewBag.ProceduresScript</pre>
+            </div>
+
+            <!-- Tab 3: Views & Functions -->
+            <div class="tab-pane fade" id="views" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-secondary font-monospace">03_Views_and_Functions_MSSQL.sql</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard(document.getElementById('viewsCode').innerText, this)">
+                        <i class="bi bi-clipboard"></i> Copy Script
+                    </button>
+                </div>
+                <pre class="bg-dark text-light p-3 rounded-3 small mono-font" style="max-height: 480px; overflow-y: auto;" id="viewsCode">@ViewBag.ViewsScript</pre>
+            </div>
+
+            <!-- Tab 4: Seed Data -->
+            <div class="tab-pane fade" id="seed" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-secondary font-monospace">04_Seed_Data_MSSQL.sql</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard(document.getElementById('seedCode').innerText, this)">
+                        <i class="bi bi-clipboard"></i> Copy Script
+                    </button>
+                </div>
+                <pre class="bg-dark text-light p-3 rounded-3 small mono-font" style="max-height: 480px; overflow-y: auto;" id="seedCode">@ViewBag.SeedScript</pre>
+            </div>
+
+            <!-- Tab 5: PostgreSQL -->
+            <div class="tab-pane fade" id="pg" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-secondary font-monospace">05_PostgreSQL_Schema_and_Seeds.sql</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard(document.getElementById('pgCode').innerText, this)">
+                        <i class="bi bi-clipboard"></i> Copy Script
+                    </button>
+                </div>
+                <pre class="bg-dark text-light p-3 rounded-3 small mono-font" style="max-height: 480px; overflow-y: auto;" id="pgCode">@ViewBag.PostgresScript</pre>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,43 @@
+## .NET Core build outputs
+bin/
+obj/
+
+## SQLite DB (do not commit local DB)
+*.db
+*.db-shm
+*.db-wal
+
+## ASP.NET Core User Secrets
+appsettings.Development.json
+
+## Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+*.userprefs
+
+## Rider
+.idea/
+
+## OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## NuGet packages
+packages/
+*.nupkg
+.nuget/
+
+## Publish output
+publish/
+artifacts/
+
+## Logs
+logs/
+*.log
+
+## Environment / secrets
+.env
+*.secret

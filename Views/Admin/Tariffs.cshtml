@@ -1,0 +1,59 @@
+@model List<DakGharNiryatKendra.Models.TariffZone>
+@{
+    ViewData["Title"] = "International Postal Tariff Schedule";
+}
+
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <h1 class="h4 fw-bold text-dark mb-1">International Postal Tariff Schedule</h1>
+            <p class="text-muted small mb-0">Base postage rates, weight increment steps, and delivery timelines for all destination postal zones</p>
+        </div>
+        <div>
+            <a asp-controller="Home" asp-action="Calculator" class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-calculator me-1"></i> Test Rate Calculator
+            </a>
+        </div>
+    </div>
+
+    <div class="dnk-card p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle small mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Country</th>
+                        <th>Service Type</th>
+                        <th>Postal Zone</th>
+                        <th>Base Rate (INR)</th>
+                        <th>Step Rate (INR)</th>
+                        <th>Max Weight</th>
+                        <th>Transit Days</th>
+                        <th>Fuel / GST</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Model)
+                    {
+                        <tr>
+                            <td>
+                                <span class="fw-bold text-dark">@t.CountryName</span>
+                                <span class="badge bg-light text-dark border font-monospace ms-1">@t.CountryCode</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25">
+                                    @t.ServiceType.ToString().Replace('_', ' ')
+                                </span>
+                            </td>
+                            <td>@t.PostalZone</td>
+                            <td class="fw-bold">₹ @t.BaseRateINR.ToString("N2") <span class="text-muted small">/ @t.BaseWeightGrams g</span></td>
+                            <td>₹ @t.StepRateINR.ToString("N2") <span class="text-muted small">/ +@t.StepWeightGrams g</span></td>
+                            <td>@t.MaxAllowedWeightKg.ToString("F1") Kg</td>
+                            <td><span class="text-success fw-semibold">@t.MinDeliveryDays - @t.MaxDeliveryDays Days</span></td>
+                            <td>@t.FuelSurchargePercent% Fuel | @t.GstPercent% GST</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

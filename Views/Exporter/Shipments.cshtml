@@ -1,0 +1,110 @@
+@model List<DakGharNiryatKendra.Models.ExportConsignment>
+@{
+    ViewData["Title"] = "My Export Shipments & Postal Bills of Export";
+    var currentFilter = ViewBag.CurrentFilter as string;
+}
+
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <h1 class="h4 fw-bold text-dark mb-1">My Export Shipments (e-PBE Registry)</h1>
+            <p class="text-muted small mb-0">Manage and track all export articles filed under your IEC code</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-controller="Exporter" asp-action="Book" class="btn btn-dnk-primary">
+                <i class="bi bi-plus-circle me-1"></i> Book New Consignment
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter Pills -->
+    <div class="d-flex gap-2 flex-wrap mb-4">
+        <a asp-controller="Exporter" asp-action="Shipments" class="btn btn-sm @(string.IsNullOrEmpty(currentFilter) ? "btn-danger" : "btn-outline-secondary")">
+            All (@Model.Count)
+        </a>
+        <a asp-controller="Exporter" asp-action="Shipments" asp-route-status="Booked" class="btn btn-sm @(currentFilter == "Booked" ? "btn-danger" : "btn-outline-secondary")">
+            Booked
+        </a>
+        <a asp-controller="Exporter" asp-action="Shipments" asp-route-status="InductedAtDNK" class="btn btn-sm @(currentFilter == "InductedAtDNK" ? "btn-danger" : "btn-outline-secondary")">
+            Inducted at DNK
+        </a>
+        <a asp-controller="Exporter" asp-action="Shipments" asp-route-status="CustomsHold" class="btn btn-sm @(currentFilter == "CustomsHold" ? "btn-danger" : "btn-outline-secondary")">
+            Customs Hold / Query
+        </a>
+        <a asp-controller="Exporter" asp-action="Shipments" asp-route-status="DepartedOriginCountry" class="btn btn-sm @(currentFilter == "DepartedOriginCountry" ? "btn-danger" : "btn-outline-secondary")">
+            In Transit (Air)
+        </a>
+        <a asp-controller="Exporter" asp-action="Shipments" asp-route-status="Delivered" class="btn btn-sm @(currentFilter == "Delivered" ? "btn-danger" : "btn-outline-secondary")">
+            Delivered
+        </a>
+    </div>
+
+    <!-- Shipments Data Table -->
+    <div class="dnk-card p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle small mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Booking Date</th>
+                        <th>Article / S10 Barcode</th>
+                        <th>PBE Number & Type</th>
+                        <th>Recipient & Destination</th>
+                        <th>Gross Wt</th>
+                        <th>Declared Value</th>
+                        <th>Postage Cost</th>
+                        <th>Status</th>
+                        <th class="text-end">Print / Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center py-5 text-muted">
+                                <div class="fs-2 mb-2"><i class="bi bi-box-seam"></i></div>
+                                <h5>No shipments found</h5>
+                                <p>No export consignments found for the selected filter.</p>
+                            </td>
+                        </tr>
+                    }
+                    @foreach (var c in Model)
+                    {
+                        <tr>
+                            <td class="text-muted">@c.CreatedAt.ToString("dd MMM yyyy")</td>
+                            <td>
+                                <a asp-controller="Exporter" asp-action="Details" asp-route-id="@c.Id" class="fw-bold font-monospace text-danger text-decoration-none">
+                                    @c.TrackingNumber
+                                </a>
+                                <div class="text-muted" style="font-size: 0.72rem;">@c.ServiceType.ToString().Replace('_', ' ')</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border font-monospace">@c.PbeNumber</span>
+                                <div class="badge bg-secondary bg-opacity-10 text-secondary" style="font-size: 0.7rem;">@c.PbeType</div>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark">@c.RecipientName</div>
+                                <div class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-geo-alt text-danger me-1"></i>@c.RecipientCity, @c.RecipientCountry</div>
+                            </td>
+                            <td>@c.ActualWeightKg.ToString("F2") Kg</td>
+                            <td class="fw-bold text-dark">₹ @c.DeclaredValueINR.ToString("N2")</td>
+                            <td class="fw-semibold text-secondary">₹ @c.TotalShippingCostINR.ToString("N2")</td>
+                            <td>
+                                <span class="badge-status @(c.Status == DakGharNiryatKendra.Models.ConsignmentStatus.Delivered ? "badge-status-delivered" : c.Status == DakGharNiryatKendra.Models.ConsignmentStatus.CustomsHold ? "badge-status-hold" : "badge-status-transit")">
+                                    @c.Status.ToString()
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-controller="Exporter" asp-action="Details" asp-route-id="@c.Id" class="btn btn-outline-secondary" title="View Details"><i class="bi bi-eye"></i></a>
+                                    <a asp-controller="Exporter" asp-action="PrintPbe" asp-route-id="@c.Id" class="btn btn-outline-secondary" title="Print Official PBE" target="_blank"><i class="bi bi-file-earmark-text"></i> PBE</a>
+                                    <a asp-controller="Exporter" asp-action="PrintLabel" asp-route-id="@c.Id" class="btn btn-outline-secondary" title="Print Shipping Label" target="_blank"><i class="bi bi-upc"></i> Label</a>
+                                    <a asp-controller="Exporter" asp-action="PrintInvoice" asp-route-id="@c.Id" class="btn btn-outline-secondary" title="Print Invoice" target="_blank"><i class="bi bi-receipt"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,696 @@
+@{
+    ViewData["Title"] = "User Welcome Desk & Portal - Dak Ghar Niryat Kendra";
+    var currentUser = ViewBag.CurrentUser as User ?? new User { FullName = "Valued User", Role = UserRole.Exporter };
+    var currentRole = currentUser.Role;
+    var assignedKendra = ViewBag.AssignedKendra as DnkCenter ?? new DnkCenter { CenterName = "Jaipur HPO DNK", City = "Jaipur", State = "Rajasthan", Pincode = "302001", Phone = "0141-2365412", ContactPerson = "Sh. Ramesh Sharma, Nodal Officer" };
+    var consignments = ViewBag.UserConsignments as List<ExportConsignment> ?? new List<ExportConsignment>();
+    var popularHsCodes = ViewBag.PopularHsCodes as List<HsCodeDirectory> ?? new List<HsCodeDirectory>();
+    decimal totalVal = ViewBag.TotalDeclaredVal ?? 0m;
+    int totalDispatched = ViewBag.TotalDispatched ?? 0;
+    int totalDelivered = ViewBag.TotalDelivered ?? 0;
+    int inTransit = ViewBag.InTransit ?? 0;
+
+    int pendingInductions = ViewBag.PendingInductions ?? 0;
+    int totalManifests = ViewBag.TotalManifests ?? 0;
+    int pendingPickups = ViewBag.PendingPickups ?? 0;
+
+    int pendingCustoms = ViewBag.PendingCustomsScrutiny ?? 0;
+    int clearedToday = ViewBag.ClearedToday ?? 0;
+    int holdForQuery = ViewBag.HoldForQuery ?? 0;
+
+    int totalCenters = ViewBag.TotalCenters ?? 8;
+    int totalExporters = ViewBag.TotalExporters ?? 12;
+    decimal nationalTurnover = ViewBag.NationalTurnover ?? 1250000m;
+}
+
+<div class="container-fluid px-lg-4 py-4">
+    <!-- Top Interactive Persona Switcher Banner -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
+        <div class="card-body p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-danger text-white px-3 py-2 fw-bold">
+                    <i class="bi bi-person-badge me-1"></i> USER WELCOME HUB
+                </span>
+                <span class="text-muted small d-none d-md-inline">Explore tailored welcome dashboards for each stakeholder:</span>
+            </div>
+            <div class="btn-group" role="group" aria-label="Welcome Persona Selector">
+                <a href="/Account/SwitchUser?username=exporter1&returnUrl=/User/Welcome" class="btn btn-sm @(currentRole == UserRole.Exporter && currentUser.Username == "exporter1" ? "btn-danger fw-bold" : "btn-outline-secondary")">
+                    <i class="bi bi-shop me-1"></i> MSME Exporter (Rajesh)
+                </a>
+                <a href="/Account/SwitchUser?username=exporter2&returnUrl=/User/Welcome" class="btn btn-sm @(currentRole == UserRole.Exporter && currentUser.Username == "exporter2" ? "btn-danger fw-bold" : "btn-outline-secondary")">
+                    <i class="bi bi-flower1 me-1"></i> Artisan Exporter (Aarti)
+                </a>
+                <a href="/Account/SwitchUser?username=postal_staff&returnUrl=/User/Welcome" class="btn btn-sm @(currentRole == UserRole.PostalStaff ? "btn-warning text-dark fw-bold" : "btn-outline-secondary")">
+                    <i class="bi bi-envelope-paper me-1"></i> DNK Staff (Suresh)
+                </a>
+                <a href="/Account/SwitchUser?username=customs_officer&returnUrl=/User/Welcome" class="btn btn-sm @(currentRole == UserRole.CustomsOfficer ? "btn-primary fw-bold" : "btn-outline-secondary")">
+                    <i class="bi bi-shield-check me-1"></i> Customs Appraiser (Vijay)
+                </a>
+                <a href="/Account/SwitchUser?username=admin&returnUrl=/User/Welcome" class="btn btn-sm @(currentRole == UserRole.Admin ? "btn-success fw-bold" : "btn-outline-secondary")">
+                    <i class="bi bi-gear-fill me-1"></i> Admin (Directorate)
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Personalized Welcome Banner -->
+    <div class="p-4 rounded-4 mb-4 text-white shadow-sm" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 60%, @(currentRole == UserRole.Exporter ? "#880e14" : currentRole == UserRole.PostalStaff ? "#78350f" : currentRole == UserRole.CustomsOfficer ? "#1e3a8a" : "#064e3b") 100%);">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <img src="/images/dak_ghar_logo.svg" alt="Dak Ghar Niryat Kendra Emblem" class="bg-white p-1 rounded-circle shadow-sm" style="width: 54px; height: 54px; object-fit: contain;" />
+                    <div>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                    @if (currentRole == UserRole.Exporter)
+                    {
+                        <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-1">
+                            <i class="bi bi-patch-check-fill me-1"></i> VERIFIED MSME EXPORTER
+                        </span>
+                        <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-50 px-3 py-1">
+                            <i class="bi bi-file-earmark-lock-fill me-1"></i> LUT ACTIVE (ZERO-RATED IGST)
+                        </span>
+                    }
+                    else if (currentRole == UserRole.PostalStaff)
+                    {
+                        <span class="badge bg-warning text-dark px-3 py-1 fw-bold">
+                            <i class="bi bi-building me-1"></i> NODAL POST OFFICE COUNTER
+                        </span>
+                        <span class="badge bg-light text-dark px-2 py-1 small">
+                            Induction Desk Active
+                        </span>
+                    }
+                    else if (currentRole == UserRole.CustomsOfficer)
+                    {
+                        <span class="badge bg-primary px-3 py-1 fw-bold">
+                            <i class="bi bi-shield-check me-1"></i> APPRAISING WING (SEC 84 CUSTOMS)
+                        </span>
+                        <span class="badge bg-light text-dark px-2 py-1 small">
+                            ICEGATE EDI Gateway
+                        </span>
+                    }
+                    else if (currentRole == UserRole.Admin)
+                    {
+                        <span class="badge bg-success px-3 py-1 fw-bold">
+                            <i class="bi bi-graph-up-arrow me-1"></i> DIRECTORATE GENERAL OF POSTS
+                        </span>
+                        <span class="badge bg-light text-dark px-2 py-1 small">
+                            National Administration HQ
+                        </span>
+                    }
+
+                    <span class="badge bg-light text-dark px-2 py-1 small">
+                        <i class="bi bi-geo-alt-fill text-danger me-1"></i> @assignedKendra.CenterName
+                    </span>
+                        </div>
+                    </div>
+                </div>
+
+                <h1 class="display-6 fw-bold mb-1 text-white">
+                    Welcome, <span class="text-warning">@(currentUser.FullName.Split('(')[0].Trim())</span>!
+                </h1>
+                <p class="text-light text-opacity-75 mb-3" style="font-size: 1.05rem;">
+                    <strong>@currentUser.BusinessName</strong> &bull; User ID: <span class="font-monospace text-warning">@currentUser.Username</span> &bull; Role: <span class="badge bg-secondary">@currentUser.Role</span>
+                </p>
+
+                <!-- Credentials / Details Strip -->
+                <div class="d-flex gap-2 flex-wrap text-light small font-monospace pt-1">
+                    @if (currentRole == UserRole.Exporter)
+                    {
+                        <span class="bg-dark bg-opacity-50 px-2 py-1 rounded border border-secondary">
+                            <i class="bi bi-card-text text-info me-1"></i> IEC: <strong>@(currentUser.IecNumber ?? "0518920491")</strong>
+                        </span>
+                        <span class="bg-dark bg-opacity-50 px-2 py-1 rounded border border-secondary">
+                            <i class="bi bi-receipt text-warning me-1"></i> GSTIN: <strong>@(currentUser.Gstin ?? "08AAAAA0000A1Z5")</strong>
+                        </span>
+                        <span class="bg-dark bg-opacity-50 px-2 py-1 rounded border border-secondary">
+                            <i class="bi bi-shield-check text-success me-1"></i> LUT Ref: <strong>@(currentUser.LutNumber ?? "AD080124001928K")</strong>
+                        </span>
+                    }
+                    else if (currentRole == UserRole.PostalStaff)
+                    {
+                        <span class="bg-dark bg-opacity-50 px-2 py-1 rounded border border-secondary">
+                            <i class="bi bi-upc-scan text-warning me-1"></i> Scanner Station: <strong>COUNTER-01</strong>
+                        </span>
+                        <span class="bg-dark bg-opacity-50 px-2 py-1 rounded border border-secondary">
+                            <i class="bi bi-building text-info me-1"></i> Attached FPO: <strong>DELHI FOREIGN POST OFFICE</strong>
+                        </span>
+                    }
+                    else if (currentRole == UserRole.CustomsOfficer)
+                    {
+                        <span class="bg-dark bg-opacity-50 px-2 py-1 rounded border border-secondary">
+                            <i class="bi bi-patch-check text-info me-1"></i> Appraiser ID: <strong>IRS-DEL-8921</strong>
+                        </span>
+                        <span class="bg-dark bg-opacity-50 px-2 py-1 rounded border border-secondary">
+                            <i class="bi bi-file-earmark-check text-success me-1"></i> Clearance Port: <strong>IN-DEL-FPO</strong>
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="bg-dark bg-opacity-50 px-2 py-1 rounded border border-secondary">
+                            <i class="bi bi-building-check text-success me-1"></i> Nodal HQ: <strong>Dak Bhawan, New Delhi</strong>
+                        </span>
+                        <span class="bg-dark bg-opacity-50 px-2 py-1 rounded border border-secondary">
+                            <i class="bi bi-diagram-3 text-info me-1"></i> Scope: <strong>Pan-India Postal Network (210+ Nations)</strong>
+                        </span>
+                    }
+                </div>
+            </div>
+
+            <div class="col-lg-4 text-lg-end">
+                <div class="d-flex flex-column gap-2">
+                    @if (currentRole == UserRole.Exporter)
+                    {
+                        <a asp-controller="Exporter" asp-action="Book" class="btn btn-danger btn-lg fw-bold shadow">
+                            <i class="bi bi-plus-circle-fill me-1"></i> Book Export Consignment (e-PBE)
+                        </a>
+                        <div class="d-flex gap-2 justify-content-lg-end">
+                            <a asp-controller="Exporter" asp-action="Shipments" class="btn btn-outline-light btn-sm">
+                                <i class="bi bi-box-seam me-1"></i> My Shipments
+                            </a>
+                            <a asp-controller="Home" asp-action="Calculator" class="btn btn-outline-warning text-warning btn-sm">
+                                <i class="bi bi-calculator me-1"></i> Rate Estimator
+                            </a>
+                        </div>
+                    }
+                    else if (currentRole == UserRole.PostalStaff)
+                    {
+                        <a asp-controller="PostalStaff" asp-action="Induction" class="btn btn-warning btn-lg fw-bold shadow text-dark">
+                            <i class="bi bi-upc-scan me-1"></i> Open Counter Induction Scanner
+                        </a>
+                        <div class="d-flex gap-2 justify-content-lg-end">
+                            <a asp-controller="PostalStaff" asp-action="CreateManifest" class="btn btn-outline-light btn-sm">
+                                <i class="bi bi-bag-check me-1"></i> FPO Bagging
+                            </a>
+                            <a asp-controller="PostalStaff" asp-action="Dashboard" class="btn btn-outline-warning text-warning btn-sm">
+                                <i class="bi bi-speedometer2 me-1"></i> Counter Desk
+                            </a>
+                        </div>
+                    }
+                    else if (currentRole == UserRole.CustomsOfficer)
+                    {
+                        <a asp-controller="Customs" asp-action="Dashboard" class="btn btn-primary btn-lg fw-bold shadow">
+                            <i class="bi bi-shield-check me-1"></i> Open Customs Scrutiny Desk
+                        </a>
+                    }
+                    else if (currentRole == UserRole.Admin)
+                    {
+                        <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-success btn-lg fw-bold shadow">
+                            <i class="bi bi-graph-up me-1"></i> Analytics &amp; Directorate Overview
+                        </a>
+                        <div class="d-flex gap-2 justify-content-lg-end">
+                            <a asp-controller="Admin" asp-action="Kendras" class="btn btn-outline-light btn-sm">
+                                <i class="bi bi-geo me-1"></i> Kendra Directory
+                            </a>
+                            <a asp-controller="Admin" asp-action="Exporters" class="btn btn-outline-warning text-warning btn-sm">
+                                <i class="bi bi-people me-1"></i> MSME Exporters
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROLE SPECIFIC BODY 1: EXPORTER VIEW -->
+    @if (currentRole == UserRole.Exporter)
+    {
+        <!-- Onboarding & Compliance Progress Tracker -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <div>
+                        <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-list-check text-danger me-2"></i>MSME Exporter Readiness &amp; Onboarding Checklist</h5>
+                        <p class="text-muted small mb-0">Follow these 5 essential steps to streamline your zero-paperwork international exports</p>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 fw-bold">
+                        <i class="bi bi-check2-all me-1"></i> 100% EXPORT READY
+                    </span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md">
+                        <div class="p-3 bg-light rounded-3 border border-success border-opacity-50 h-100">
+                            <div class="d-flex align-items-center gap-2 mb-1 text-success fw-bold small">
+                                <i class="bi bi-check-circle-fill fs-5"></i> 1. IEC &amp; GSTIN Active
+                            </div>
+                            <p class="text-muted small mb-0">DGFT Import-Export Code &amp; GST registration linked and verified.</p>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="p-3 bg-light rounded-3 border border-success border-opacity-50 h-100">
+                            <div class="d-flex align-items-center gap-2 mb-1 text-success fw-bold small">
+                                <i class="bi bi-check-circle-fill fs-5"></i> 2. LUT Form RFD-11
+                            </div>
+                            <p class="text-muted small mb-0">Letter of Undertaking active for 0% IGST upfront payment.</p>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="p-3 bg-light rounded-3 border border-primary border-opacity-50 h-100">
+                            <div class="d-flex align-items-center gap-2 mb-1 text-primary fw-bold small">
+                                <i class="bi bi-pencil-square fs-5"></i> 3. File e-PBE Online
+                            </div>
+                            <p class="text-muted small mb-0">Generate electronic Postal Bill of Export with automatic HS Code lookup.</p>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="p-3 bg-light rounded-3 border border-warning border-opacity-50 h-100">
+                            <div class="d-flex align-items-center gap-2 mb-1 text-warning fw-bold small">
+                                <i class="bi bi-upc-scan fs-5"></i> 4. Print S10 Labels
+                            </div>
+                            <p class="text-muted small mb-0">Instant thermal 13-character barcode label and integrated CN23 form.</p>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="p-3 bg-light rounded-3 border border-danger border-opacity-50 h-100">
+                            <div class="d-flex align-items-center gap-2 mb-1 text-danger fw-bold small">
+                                <i class="bi bi-truck fs-5"></i> 5. Doorstep Pickup
+                            </div>
+                            <p class="text-muted small mb-0">Postman Speed Post collection from your workshop or showroom.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Performance Metrics Summary -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 h-100 border-start border-4 border-danger">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-muted small fw-bold text-uppercase">Total Export Shipments</span>
+                            <div class="stat-icon-wrapper stat-icon-red" style="width:38px; height:38px; font-size:1.1rem;">
+                                <i class="bi bi-box-seam"></i>
+                            </div>
+                        </div>
+                        <div class="fs-3 fw-bold text-dark font-monospace">@totalDispatched</div>
+                        <div class="text-success small"><i class="bi bi-check-circle me-1"></i>All e-PBE Generated</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 h-100 border-start border-4 border-warning">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-muted small fw-bold text-uppercase">In Transit / At Customs</span>
+                            <div class="stat-icon-wrapper stat-icon-gold" style="width:38px; height:38px; font-size:1.1rem;">
+                                <i class="bi bi-airplane-engines"></i>
+                            </div>
+                        </div>
+                        <div class="fs-3 fw-bold text-warning font-monospace">@inTransit</div>
+                        <div class="text-muted small"><i class="bi bi-radar me-1"></i>Active Air Mail Routes</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 h-100 border-start border-4 border-success">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-muted small fw-bold text-uppercase">Delivered Abroad</span>
+                            <div class="stat-icon-wrapper stat-icon-emerald" style="width:38px; height:38px; font-size:1.1rem;">
+                                <i class="bi bi-check2-circle"></i>
+                            </div>
+                        </div>
+                        <div class="fs-3 fw-bold text-success font-monospace">@totalDelivered</div>
+                        <div class="text-muted small"><i class="bi bi-globe me-1"></i>Final Consignee Receipt</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 h-100 border-start border-4 border-primary">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-muted small fw-bold text-uppercase">Turnover Realized</span>
+                            <div class="stat-icon-wrapper stat-icon-blue" style="width:38px; height:38px; font-size:1.1rem;">
+                                <i class="bi bi-currency-rupee"></i>
+                            </div>
+                        </div>
+                        <div class="fs-3 fw-bold text-primary font-monospace">₹ @totalVal.ToString("N0")</div>
+                        <div class="text-success small fw-semibold"><i class="bi bi-gift-fill me-1"></i>Eligible RoDTEP: ₹ @((totalVal * 0.025m).ToString("N0"))</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fast Action Command Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="dnk-card h-100 d-flex flex-column border-top border-4 border-danger">
+                    <div class="stat-icon-wrapper stat-icon-red mb-3">
+                        <i class="bi bi-plus-circle"></i>
+                    </div>
+                    <h4 class="h5 fw-bold text-dark mb-1">File New e-PBE</h4>
+                    <p class="text-muted small mb-4 flex-grow-1">
+                        Create electronic Postal Bill of Export with automatic HS Code classification and zero-rated IGST LUT.
+                    </p>
+                    <a asp-controller="Exporter" asp-action="Book" class="btn btn-dnk-primary w-100">
+                        <i class="bi bi-plus-lg me-1"></i> Start Booking Form
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="dnk-card h-100 d-flex flex-column border-top border-4 border-warning">
+                    <div class="stat-icon-wrapper stat-icon-gold mb-3">
+                        <i class="bi bi-printer"></i>
+                    </div>
+                    <h4 class="h5 fw-bold text-dark mb-1">Print Thermal Labels</h4>
+                    <p class="text-muted small mb-4 flex-grow-1">
+                        Download &amp; print UPU S10 Barcode thermal stickers (4x6 in), CN22/23 customs forms, and commercial invoices.
+                    </p>
+                    <a asp-controller="Exporter" asp-action="Shipments" class="btn btn-outline-warning text-dark w-100 fw-bold">
+                        <i class="bi bi-tags me-1"></i> View Shipping Labels
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="dnk-card h-100 d-flex flex-column border-top border-4 border-primary">
+                    <div class="stat-icon-wrapper stat-icon-blue mb-3">
+                        <i class="bi bi-truck"></i>
+                    </div>
+                    <h4 class="h5 fw-bold text-dark mb-1">Doorstep Pickup</h4>
+                    <p class="text-muted small mb-4 flex-grow-1">
+                        Schedule a convenient time slot for the local Speed Post postman to collect your export parcels at your premises.
+                    </p>
+                    <a href="/Exporter/RequestPickup" class="btn btn-outline-primary w-100 fw-bold">
+                        <i class="bi bi-calendar-check me-1"></i> Schedule Pickup
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="dnk-card h-100 d-flex flex-column border-top border-4 border-success">
+                    <div class="stat-icon-wrapper stat-icon-emerald mb-3">
+                        <i class="bi bi-calculator"></i>
+                    </div>
+                    <h4 class="h5 fw-bold text-dark mb-1">Tariff &amp; Duty Check</h4>
+                    <p class="text-muted small mb-4 flex-grow-1">
+                        Calculate international postage, volumetric weight, insurance, and RoDTEP rebate for 210+ countries.
+                    </p>
+                    <a asp-controller="Home" asp-action="Calculator" class="btn btn-outline-success w-100 fw-bold">
+                        <i class="bi bi-calculator me-1"></i> Estimate Shipping
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two Column Layout: Recent Shipments & Assigned Nodal Hub Details -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-clock-history text-danger me-2"></i>My Recent Export Consignments</h5>
+                            <p class="text-muted small mb-0">Track real-time customs clearance, barcode milestones, and international transit</p>
+                        </div>
+                        <a asp-controller="Exporter" asp-action="Shipments" class="btn btn-sm btn-outline-secondary">
+                            View All Shipments <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light small text-muted text-uppercase">
+                                    <tr>
+                                        <th class="ps-3">Article / PBE No</th>
+                                        <th>Destination</th>
+                                        <th>Service</th>
+                                        <th>Weight</th>
+                                        <th>FOB Value</th>
+                                        <th>Status</th>
+                                        <th class="text-end pe-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (consignments.Any())
+                                    {
+                                        @foreach (var c in consignments.Take(5))
+                                        {
+                                            <tr>
+                                                <td class="ps-3">
+                                                    <a asp-controller="Tracking" asp-action="Index" asp-route-id="@c.TrackingNumber" class="fw-bold text-danger font-monospace text-decoration-none">
+                                                        @c.TrackingNumber
+                                                    </a>
+                                                    <div class="text-muted small font-monospace">@c.PbeNumber</div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-light text-dark border">
+                                                        @c.RecipientCountry (@c.DestinationCountryCode)
+                                                    </span>
+                                                    <div class="text-muted small text-truncate" style="max-width: 140px;">@c.RecipientCity</div>
+                                                </td>
+                                                <td>
+                                                    <span class="small fw-semibold">@c.ServiceType</span>
+                                                </td>
+                                                <td class="small font-monospace">
+                                                    @c.ChargeableWeightKg.ToString("0.00") Kg
+                                                </td>
+                                                <td class="small fw-bold">
+                                                    ₹ @c.DeclaredValueINR.ToString("N0")
+                                                </td>
+                                                <td>
+                                                    @switch (c.Status)
+                                                    {
+                                                        case ConsignmentStatus.Booked:
+                                                            <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 small">Booked</span>
+                                                            break;
+                                                        case ConsignmentStatus.InductedAtDNK:
+                                                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 small">Inducted at DNK</span>
+                                                            break;
+                                                        case ConsignmentStatus.CustomsCleared:
+                                                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 small">Customs Cleared</span>
+                                                            break;
+                                                        case ConsignmentStatus.DepartedOriginCountry:
+                                                        case ConsignmentStatus.OutwardInternationalHub:
+                                                        case ConsignmentStatus.ArrivedDestinationHub:
+                                                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 small">In Transit</span>
+                                                            break;
+                                                        case ConsignmentStatus.Delivered:
+                                                            <span class="badge bg-success small">Delivered</span>
+                                                            break;
+                                                        case ConsignmentStatus.CustomsHold:
+                                                            <span class="badge bg-danger small">Customs Query</span>
+                                                            break;
+                                                        default:
+                                                            <span class="badge bg-secondary small">@c.Status</span>
+                                                            break;
+                                                    }
+                                                </td>
+                                                <td class="text-end pe-3">
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a asp-controller="Exporter" asp-action="PrintLabel" asp-route-id="@c.Id" target="_blank" class="btn btn-outline-dark" title="Print S10 Thermal Label">
+                                                            <i class="bi bi-printer"></i>
+                                                        </a>
+                                                        <a asp-controller="Exporter" asp-action="Details" asp-route-id="@c.Id" class="btn btn-outline-danger" title="View Details">
+                                                            <i class="bi bi-eye"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="7" class="text-center py-4 text-muted">
+                                                <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
+                                                No export shipments booked yet. Click <strong>Book Export Consignment</strong> above to create your first e-PBE!
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 mb-4 border-top border-4 border-danger">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <span class="badge bg-danger text-white px-2 py-1 small">Assigned Nodal Hub</span>
+                                <h5 class="fw-bold text-dark mt-1 mb-0">@assignedKendra.CenterName</h5>
+                            </div>
+                            <span class="badge bg-secondary font-monospace">@assignedKendra.CenterCode</span>
+                        </div>
+
+                        <p class="text-muted small mb-3">
+                            <i class="bi bi-geo-alt-fill text-danger me-1"></i> @assignedKendra.Address, @assignedKendra.City, @assignedKendra.State - @assignedKendra.Pincode
+                        </p>
+
+                        <div class="p-3 bg-light rounded-3 border mb-3 small">
+                            <div class="mb-2">
+                                <span class="text-muted">Nodal Officer:</span>
+                                <strong class="d-block text-dark">@assignedKendra.ContactPerson</strong>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-muted">Direct Phone:</span>
+                                <strong class="d-block text-dark"><i class="bi bi-telephone text-success me-1"></i>@assignedKendra.Phone</strong>
+                            </div>
+                            <div>
+                                <span class="text-muted">Operating Hours:</span>
+                                <strong class="d-block text-dark"><i class="bi bi-clock text-warning me-1"></i>@assignedKendra.OperatingHours</strong>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <a asp-controller="Home" asp-action="Locator" class="btn btn-outline-danger btn-sm w-100 fw-semibold">
+                                <i class="bi bi-pin-map me-1"></i> Locate on Map
+                            </a>
+                            <a href="/Exporter/RequestPickup" class="btn btn-dnk-primary btn-sm w-100">
+                                <i class="bi bi-truck me-1"></i> Book Pickup
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-tags text-warning me-2"></i>Top Export HS Codes</h5>
+                        <div class="list-group list-group-flush small">
+                            @foreach (var hs in popularHsCodes)
+                            {
+                                <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong class="font-monospace text-dark">@hs.HsCode</strong>
+                                        <div class="text-muted small text-truncate" style="max-width: 170px;">@hs.Description</div>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-success bg-opacity-10 text-success">RoDTEP @hs.RodtepRatePercent%</span>
+                                        <a href="/Exporter/Book" class="d-block text-danger small text-decoration-none fw-bold mt-1">Book &rarr;</a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (currentRole == UserRole.PostalStaff)
+    {
+        <!-- ROLE SPECIFIC BODY 2: POSTAL STAFF VIEW -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 border-top border-4 border-warning h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold text-dark mb-0">Pending Induction</h5>
+                        <span class="badge bg-warning text-dark font-monospace fs-6">@pendingInductions</span>
+                    </div>
+                    <p class="text-muted small mb-4">Export parcels booked online waiting for counter weighment and dimension validation.</p>
+                    <a asp-controller="PostalStaff" asp-action="Induction" class="btn btn-warning text-dark fw-bold w-100">
+                        <i class="bi bi-upc-scan me-1"></i> Launch Induction Scanner
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 border-top border-4 border-danger h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold text-dark mb-0">FPO Bag Manifests</h5>
+                        <span class="badge bg-danger text-white font-monospace fs-6">@totalManifests</span>
+                    </div>
+                    <p class="text-muted small mb-4">Bag and seal inducted export consignments for scheduled dispatch to Delhi/Mumbai FPO.</p>
+                    <a asp-controller="PostalStaff" asp-action="CreateManifest" class="btn btn-danger fw-bold w-100">
+                        <i class="bi bi-bag-check me-1"></i> Generate FPO Bag
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 border-top border-4 border-primary h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold text-dark mb-0">Doorstep Pickups</h5>
+                        <span class="badge bg-primary text-white font-monospace fs-6">@pendingPickups</span>
+                    </div>
+                    <p class="text-muted small mb-4">Manage scheduled exporter collections for your beat postman.</p>
+                    <a asp-controller="PostalStaff" asp-action="Dashboard" class="btn btn-outline-primary fw-bold w-100">
+                        <i class="bi bi-calendar-check me-1"></i> View Pickup Queue
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+    else if (currentRole == UserRole.CustomsOfficer)
+    {
+        <!-- ROLE SPECIFIC BODY 3: CUSTOMS VIEW -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 border-top border-4 border-primary h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold text-dark mb-0">Pending Scrutiny</h5>
+                        <span class="badge bg-primary text-white font-monospace fs-6">@pendingCustoms</span>
+                    </div>
+                    <p class="text-muted small mb-4">e-PBE filings under Section 84 Customs Act requiring officer appraisal &amp; OOC grant.</p>
+                    <a asp-controller="Customs" asp-action="Dashboard" class="btn btn-primary fw-bold w-100">
+                        <i class="bi bi-shield-check me-1"></i> Scrutinize Queue
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 border-top border-4 border-success h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold text-dark mb-0">Cleared Today (OOC)</h5>
+                        <span class="badge bg-success text-white font-monospace fs-6">@clearedToday</span>
+                    </div>
+                    <p class="text-muted small mb-4">Consignments granted green-channel Out of Charge clearance for air cargo loading.</p>
+                    <a asp-controller="Customs" asp-action="Dashboard" class="btn btn-outline-success fw-bold w-100">
+                        <i class="bi bi-check-circle me-1"></i> View Cleared Articles
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 border-top border-4 border-danger h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold text-dark mb-0">Query Hold</h5>
+                        <span class="badge bg-danger text-white font-monospace fs-6">@holdForQuery</span>
+                    </div>
+                    <p class="text-muted small mb-4">Consignments awaiting exporter document clarification or physical inspection.</p>
+                    <a asp-controller="Customs" asp-action="Dashboard" class="btn btn-outline-danger fw-bold w-100">
+                        <i class="bi bi-exclamation-octagon me-1"></i> Manage Queries
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+    else if (currentRole == UserRole.Admin)
+    {
+        <!-- ROLE SPECIFIC BODY 4: ADMIN VIEW -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 p-4 border-top border-4 border-danger h-100">
+                    <div class="fs-3 fw-bold text-danger font-monospace mb-1">@totalCenters</div>
+                    <h6 class="fw-bold text-dark">Active DNK Kendras</h6>
+                    <p class="text-muted small mb-3">Pan-India operational network</p>
+                    <a asp-controller="Admin" asp-action="Kendras" class="btn btn-outline-danger btn-sm w-100">Manage Kendras</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 p-4 border-top border-4 border-dark h-100">
+                    <div class="fs-3 fw-bold text-dark font-monospace mb-1">@totalExporters</div>
+                    <h6 class="fw-bold text-dark">MSME Exporters</h6>
+                    <p class="text-muted small mb-3">Registered verified artisans &amp; sellers</p>
+                    <a asp-controller="Admin" asp-action="Exporters" class="btn btn-outline-dark btn-sm w-100">View Exporters</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 p-4 border-top border-4 border-warning h-100">
+                    <div class="fs-3 fw-bold text-warning font-monospace mb-1">₹ @nationalTurnover.ToString("N0")</div>
+                    <h6 class="fw-bold text-dark">FOB Turnover</h6>
+                    <p class="text-muted small mb-3">Cumulative foreign trade realized</p>
+                    <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-outline-warning text-dark btn-sm w-100">View Heatmap</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 p-4 border-top border-4 border-success h-100">
+                    <div class="fs-3 fw-bold text-success font-monospace mb-1"><i class="bi bi-table"></i></div>
+                    <h6 class="fw-bold text-dark">Tariffs &amp; HS Codes</h6>
+                    <p class="text-muted small mb-3">Global shipping rates &amp; RoDTEP directory</p>
+                    <a asp-controller="Admin" asp-action="Tariffs" class="btn btn-success btn-sm w-100 fw-bold">Manage Tariffs</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

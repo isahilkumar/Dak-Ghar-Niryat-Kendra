@@ -1,0 +1,128 @@
+@model DakGharNiryatKendra.Models.ViewModels.CustomsDashboardViewModel
+@{
+    ViewData["Title"] = "Customs Postal Appraising Department - FPO Portal";
+    var officer = Model.Officer;
+}
+
+<div class="container-fluid px-lg-4 py-4">
+    <!-- Top Header -->
+    <div class="p-4 rounded-4 bg-white border shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="emblem-box" style="width: 54px; height: 54px; font-size: 1.5rem; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center gap-2">
+                        <h1 class="h4 fw-bold text-dark mb-0">Indian Customs &bull; Foreign Post Office (FPO) Wing</h1>
+                        <span class="badge bg-primary">Postal Appraising</span>
+                    </div>
+                    <div class="text-muted small mt-1">
+                        <strong>Appraising Officer:</strong> @officer.FullName (@officer.Designation) | 
+                        <strong>Jurisdiction:</strong> Foreign Post Office Kotla Road, New Delhi | Section 84 Customs Act 1962
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 d-flex align-items-center gap-1">
+                    <i class="bi bi-patch-check-fill fs-5"></i> ICEGATE Electronic PBE Integrated
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="dnk-card p-3 border-start border-4 border-warning">
+                <div class="text-muted small fw-semibold text-uppercase">Under Scrutiny Queue</div>
+                <div class="fs-2 fw-bold text-warning brand-font mt-1">@Model.TotalUnderScrutiny</div>
+                <div class="text-muted small">PBE declarations pending review</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="dnk-card p-3 border-start border-4 border-success">
+                <div class="text-muted small fw-semibold text-uppercase">Out of Charge (OOC) Granted</div>
+                <div class="fs-2 fw-bold text-success brand-font mt-1">@Model.ClearedToday</div>
+                <div class="text-muted small">Cleared for international air cargo</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="dnk-card p-3 border-start border-4 border-danger">
+                <div class="text-muted small fw-semibold text-uppercase">Customs Query / Hold</div>
+                <div class="fs-2 fw-bold text-danger brand-font mt-1">@Model.UnderHoldQuery</div>
+                <div class="text-muted small">Awaiting exporter compliance</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="dnk-card p-3 border-start border-4 border-primary">
+                <div class="text-muted small fw-semibold text-uppercase">Export Duty Assessed</div>
+                <div class="fs-2 fw-bold text-primary brand-font mt-1">₹ @Model.TotalDutyAssessedINR.ToString("N0")</div>
+                <div class="text-muted small">Total tariff realized</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scrutiny Queue Table -->
+    <div class="dnk-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                <i class="bi bi-file-earmark-check text-primary"></i> Electronic Postal Bill of Export (e-PBE) Scrutiny Queue
+            </h2>
+            <span class="badge bg-light text-dark border">Auto-Risk Assessment Enabled</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle small mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>PBE Number</th>
+                        <th>Article S10</th>
+                        <th>Exporter / IEC</th>
+                        <th>Declared Goods & HS Code</th>
+                        <th>Declared Value</th>
+                        <th>Customs Status</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.PendingScrutinyList.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                Scrutiny queue is empty. All pending Postal Bills of Export have been cleared.
+                            </td>
+                        </tr>
+                    }
+                    @foreach (var c in Model.PendingScrutinyList)
+                    {
+                        <tr>
+                            <td class="font-monospace fw-bold">@c.PbeNumber</td>
+                            <td class="font-monospace text-danger fw-semibold">@c.TrackingNumber</td>
+                            <td>
+                                <div class="fw-semibold">@(c.Exporter?.BusinessName ?? c.Exporter?.FullName)</div>
+                                <div class="text-muted" style="font-size: 0.72rem;">IEC: @(c.Exporter?.IecNumber) | LUT: @(c.LutNumber ?? "None")</div>
+                            </td>
+                            <td>
+                                <div>@(c.Items.FirstOrDefault()?.ItemDescription ?? "Export Goods")</div>
+                                <span class="badge bg-light text-dark border font-monospace" style="font-size: 0.72rem;">HS: @(c.Items.FirstOrDefault()?.HsCode)</span>
+                            </td>
+                            <td class="fw-bold">₹ @c.DeclaredValueINR.ToString("N2")</td>
+                            <td>
+                                <span class="badge-status @(c.CustomsStatus == DakGharNiryatKendra.Models.CustomsStatus.Approved ? "badge-status-cleared" : c.CustomsStatus == DakGharNiryatKendra.Models.CustomsStatus.HoldForQuery ? "badge-status-hold" : "badge-status-booked")">
+                                    @c.CustomsStatus.ToString()
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <a asp-controller="Customs" asp-action="Scrutiny" asp-route-id="@c.Id" class="btn btn-sm btn-outline-primary fw-bold">
+                                    <i class="bi bi-search me-1"></i> Scrutinize & Clear
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

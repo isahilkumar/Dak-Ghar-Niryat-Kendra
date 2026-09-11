@@ -1,0 +1,220 @@
+@model DakGharNiryatKendra.Models.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Directorate of Export Logistics - Performance Analytics";
+    var countryLabels = System.Text.Json.JsonSerializer.Serialize(Model.ExportsByCountry.Keys);
+    var countryData = System.Text.Json.JsonSerializer.Serialize(Model.ExportsByCountry.Values);
+    var categoryLabels = System.Text.Json.JsonSerializer.Serialize(Model.ExportsByCategory.Keys);
+    var categoryData = System.Text.Json.JsonSerializer.Serialize(Model.ExportsByCategory.Values);
+}
+
+<div class="container-fluid px-lg-4 py-4">
+    <!-- Directorate Top Header -->
+    <div class="p-4 rounded-4 bg-white border shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="emblem-box" style="width: 54px; height: 54px; font-size: 1.5rem; background: linear-gradient(135deg, #059669 0%, #047857 100%);">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center gap-2">
+                        <h1 class="h4 fw-bold text-dark mb-0">Directorate of International Mail & Logistics</h1>
+                        <span class="badge bg-success">National Command</span>
+                    </div>
+                    <div class="text-muted small mt-1">
+                        Department of Posts &bull; Dak Bhawan, New Delhi &bull; Pan-India Dak Ghar Niryat Kendra Network
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <a asp-controller="Admin" asp-action="Kendras" class="btn btn-outline-dark btn-sm">
+                    <i class="bi bi-geo me-1"></i> Manage Kendras
+                </a>
+                <a asp-controller="Admin" asp-action="Tariffs" class="btn btn-outline-dark btn-sm">
+                    <i class="bi bi-table me-1"></i> Tariffs
+                </a>
+                <a asp-controller="Admin" asp-action="HsCodes" class="btn btn-outline-dark btn-sm">
+                    <i class="bi bi-tags me-1"></i> HS Codes
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- National Metrics KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="dnk-card p-3 border-start border-4 border-danger h-100">
+                <div class="text-muted small fw-semibold text-uppercase">Operational Kendras</div>
+                <div class="fs-2 fw-bold text-dark brand-font mt-1">@Model.TotalDnkCenters</div>
+                <div class="text-muted small">Nationwide Branches</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="dnk-card p-3 border-start border-4 border-primary h-100">
+                <div class="text-muted small fw-semibold text-uppercase">Onboarded MSMEs</div>
+                <div class="fs-2 fw-bold text-primary brand-font mt-1">@Model.TotalExporters</div>
+                <div class="text-muted small">Registered Exporters</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="dnk-card p-3 border-start border-4 border-warning h-100">
+                <div class="text-muted small fw-semibold text-uppercase">Total Export Articles</div>
+                <div class="fs-2 fw-bold text-warning brand-font mt-1">@Model.TotalConsignmentsAllTime</div>
+                <div class="text-muted small">Dispatched to 210+ Nations</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-3">
+            <div class="dnk-card p-3 border-start border-4 border-success h-100">
+                <div class="text-muted small fw-semibold text-uppercase">Total FOB Export Value</div>
+                <div class="fs-3 fw-bold text-success brand-font mt-1">₹ @Model.TotalExportValueAllTimeINR.ToString("N0")</div>
+                <div class="text-muted small">FOREX Value Realized</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-3">
+            <div class="dnk-card p-3 border-start border-4 border-info h-100">
+                <div class="text-muted small fw-semibold text-uppercase">Postal Freight Revenue</div>
+                <div class="fs-3 fw-bold text-info brand-font mt-1">₹ @Model.TotalPostageRevenueINR.ToString("N0")</div>
+                <div class="text-muted small">Department of Posts Revenue</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js Visual Analytics Row -->
+    <div class="row g-4 mb-4">
+        <!-- Export Volume by Country Chart -->
+        <div class="col-lg-6">
+            <div class="dnk-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-pie-chart text-danger"></i> Export Consignments by Destination Country
+                    </h2>
+                    <span class="badge bg-light text-dark border">Universal Postal Network</span>
+                </div>
+                <div style="position: relative; height: 280px;">
+                    <canvas id="countryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Value by Product Category Chart -->
+        <div class="col-lg-6">
+            <div class="dnk-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-bar-chart-steps text-success"></i> Export Value by Product Category (INR)
+                    </h2>
+                    <span class="badge bg-light text-dark border">Vocal For Local Clusters</span>
+                </div>
+                <div style="position: relative; height: 280px;">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Global Consignments Table -->
+    <div class="dnk-card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 fw-bold text-dark mb-0">Live National Export Article Feed</h2>
+            <span class="badge bg-light text-dark border">Real-Time Registry</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle small mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Article Tracking No</th>
+                        <th>Origin DNK Kendra</th>
+                        <th>Exporter</th>
+                        <th>Destination Country</th>
+                        <th>Declared Value</th>
+                        <th>Postage</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Model.AllRecentConsignments)
+                    {
+                        <tr>
+                            <td class="font-monospace fw-bold text-danger">@c.TrackingNumber</td>
+                            <td>@(c.DnkCenter?.CenterName ?? "New Delhi GPO DNK")</td>
+                            <td>@(c.Exporter?.BusinessName ?? c.Exporter?.FullName)</td>
+                            <td><span class="fw-bold">@c.RecipientCountry</span></td>
+                            <td class="fw-bold">₹ @c.DeclaredValueINR.ToString("N2")</td>
+                            <td>₹ @c.TotalShippingCostINR.ToString("N2")</td>
+                            <td>
+                                <span class="badge-status @(c.Status == DakGharNiryatKendra.Models.ConsignmentStatus.Delivered ? "badge-status-delivered" : c.Status == DakGharNiryatKendra.Models.ConsignmentStatus.CustomsHold ? "badge-status-hold" : "badge-status-transit")">
+                                    @c.Status.ToString()
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Country Pie Chart
+    const countryCtx = document.getElementById('countryChart').getContext('2d');
+    const countryLabels = @Html.Raw(countryLabels);
+    const countryData = @Html.Raw(countryData);
+
+    new Chart(countryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: countryLabels,
+            datasets: [{
+                data: countryData,
+                backgroundColor: [
+                    '#B71C1C', '#F57C00', '#0284c7', '#10B981', '#8B5CF6', '#EC4899', '#64748B'
+                ],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right' }
+            }
+        }
+    });
+
+    // 2. Category Bar Chart
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    const catLabels = @Html.Raw(categoryLabels);
+    const catData = @Html.Raw(categoryData);
+
+    new Chart(categoryCtx, {
+        type: 'bar',
+        data: {
+            labels: catLabels,
+            datasets: [{
+                label: 'Export Value (INR)',
+                data: catData,
+                backgroundColor: 'rgba(183, 28, 28, 0.85)',
+                hoverBackgroundColor: '#B71C1C',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) { return '₹ ' + value.toLocaleString(); }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+}

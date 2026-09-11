@@ -1,0 +1,184 @@
+@model DakGharNiryatKendra.Models.ViewModels.TrackingViewModel
+@{
+    ViewData["Title"] = "International S10 Article Tracking";
+    var c = Model.Consignment;
+}
+
+<div class="container px-lg-4 py-5">
+    <!-- Header Search Bar -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-8 text-center">
+            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-1 rounded-pill fw-bold mb-2">Universal Postal Union (UPU)</span>
+            <h1 class="display-6 fw-bold text-dark">International Article Tracking</h1>
+            <p class="text-muted">Enter 13-character S10 tracking barcode (e.g. EM892104928IN) or Postal Bill of Export Number</p>
+
+            <form asp-controller="Tracking" asp-action="Track" method="post" class="mt-3">
+                <div class="tracking-input-group shadow-sm">
+                    <input type="text" name="trackingNumber" value="@Model.TrackingNumber" placeholder="Enter Tracking / Article Number..." required class="mono-font fw-bold text-uppercase" />
+                    <button type="submit" class="btn btn-dnk-primary px-4">
+                        <i class="bi bi-search me-1"></i> Track Article
+                    </button>
+                </div>
+            </form>
+
+            <!-- Quick Demo Clickers -->
+            <div class="d-flex justify-content-center flex-wrap gap-2 mt-3">
+                <a href="/Tracking/Index/EM892104928IN" class="btn btn-sm btn-light border"><span class="badge bg-primary me-1">US</span> EM892104928IN (In Transit)</a>
+                <a href="/Tracking/Index/LP928410293IN" class="btn btn-sm btn-light border"><span class="badge bg-success me-1">AE</span> LP928410293IN (Delivered)</a>
+                <a href="/Tracking/Index/EM109283746IN" class="btn btn-sm btn-light border"><span class="badge bg-danger me-1">CA</span> EM109283746IN (Customs Query)</a>
+                <a href="/Tracking/Index/EM419208374IN" class="btn btn-sm btn-light border"><span class="badge bg-warning text-dark me-1">FR</span> EM419208374IN (Inducted at DNK)</a>
+            </div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-warning border-0 shadow-sm mx-auto" style="max-width: 800px;">
+            <i class="bi bi-info-circle-fill text-warning fs-5 me-2"></i> @Model.ErrorMessage
+        </div>
+    }
+
+    @if (Model.IsFound && c != null)
+    {
+        <div class="row g-4 justify-content-center">
+            <!-- Consignment Summary Card & Simulator Tool -->
+            <div class="col-lg-10">
+                <div class="dnk-card p-4 mb-4 border-top border-4 border-danger">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                        <div>
+                            <span class="badge bg-danger font-monospace fs-6 px-3 py-1">@c.TrackingNumber</span>
+                            <h2 class="h4 fw-bold text-dark mt-2 mb-1">
+                                To: @c.RecipientName, @c.RecipientCity, @c.RecipientCountry
+                            </h2>
+                            <div class="text-muted small">
+                                <strong>PBE Reference:</strong> <span class="font-monospace">@c.PbeNumber</span> | 
+                                <strong>Service:</strong> <span class="badge bg-light text-dark border">@c.ServiceType.ToString().Replace('_', ' ')</span>
+                            </div>
+                        </div>
+
+                        <div class="text-md-end">
+                            <span class="badge-status @(c.Status == DakGharNiryatKendra.Models.ConsignmentStatus.Delivered ? "badge-status-delivered" : c.Status == DakGharNiryatKendra.Models.ConsignmentStatus.CustomsHold ? "badge-status-hold" : "badge-status-transit") fs-6 px-3 py-2">
+                                <i class="bi bi-circle-fill small"></i> @c.Status.ToString()
+                            </span>
+                            <div class="text-muted small mt-1">
+                                Booked On: @c.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Milestone Stepper (8 Major Steps) -->
+                    @{
+                        int currentStepInt = (int)c.Status;
+                    }
+                    <div class="p-3 bg-light rounded-4 border mb-4">
+                        <div class="row text-center g-2 small font-weight-bold">
+                            <div class="col">
+                                <div class="p-2 rounded @(currentStepInt >= 1 ? "bg-danger text-white fw-bold shadow-sm" : "text-muted")">
+                                    <i class="bi bi-file-earmark-check d-block fs-5"></i> Booked
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-2 rounded @(currentStepInt >= 4 ? "bg-danger text-white fw-bold shadow-sm" : "text-muted")">
+                                    <i class="bi bi-envelope-paper d-block fs-5"></i> Inducted
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-2 rounded @(currentStepInt >= 6 ? "bg-danger text-white fw-bold shadow-sm" : "text-muted")">
+                                    <i class="bi bi-bag-check d-block fs-5"></i> Dispatched FPO
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-2 rounded @(c.CustomsStatus == DakGharNiryatKendra.Models.CustomsStatus.Approved ? "bg-success text-white fw-bold shadow-sm" : currentStepInt == 8 ? "bg-warning text-dark fw-bold" : "text-muted")">
+                                    <i class="bi bi-shield-check d-block fs-5"></i> Customs OOC
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-2 rounded @(currentStepInt >= 11 ? "bg-primary text-white fw-bold shadow-sm" : "text-muted")">
+                                    <i class="bi bi-airplane d-block fs-5"></i> In Transit
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-2 rounded @(currentStepInt >= 14 ? "bg-info text-dark fw-bold shadow-sm" : "text-muted")">
+                                    <i class="bi bi-truck d-block fs-5"></i> Out for Delivery
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-2 rounded @(currentStepInt == 15 ? "bg-success text-white fw-bold shadow-sm" : "text-muted")">
+                                    <i class="bi bi-house-check d-block fs-5"></i> Delivered
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Presentation Live Simulator Control -->
+                    <div class="p-3 rounded-3 bg-white border border-danger border-opacity-25 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <span class="badge bg-danger text-white me-2">Interactive Demo Action</span>
+                            <span class="small text-dark fw-semibold">Advance tracking lifecycle to next postal milestone:</span>
+                        </div>
+                        <form asp-controller="Tracking" asp-action="SimulateStep" method="post" class="m-0">
+                            <input type="hidden" name="trackingNumber" value="@c.TrackingNumber" />
+                            @if (c.Status != DakGharNiryatKendra.Models.ConsignmentStatus.Delivered)
+                            {
+                                <button type="submit" class="btn btn-sm btn-dnk-primary">
+                                    <i class="bi bi-fast-forward-fill me-1"></i> Simulate Next Step &rarr;
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-sm btn-success" disabled>
+                                    <i class="bi bi-check-all me-1"></i> Delivery Complete
+                                </button>
+                            }
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Detailed Milestone Timeline -->
+                <div class="dnk-card p-4">
+                    <h3 class="h5 fw-bold text-dark mb-4 pb-2 border-bottom d-flex align-items-center gap-2">
+                        <i class="bi bi-clock-history text-danger"></i> Complete Tracking Journey
+                    </h3>
+
+                    <div class="tracking-timeline">
+                        @for (int i = 0; i < Model.Milestones.Count; i++)
+                        {
+                            var m = Model.Milestones[i];
+                            var isLatest = i == 0;
+
+                            <div class="timeline-step @(isLatest ? "current" : "completed")">
+                                <div class="step-marker">
+                                    @if (isLatest)
+                                    {
+                                        <i class="bi bi-geo-alt-fill"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-check"></i>
+                                    }
+                                </div>
+                                <div class="step-content @(isLatest ? "border-danger border-2 shadow-sm" : "")">
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-1 mb-1">
+                                        <div class="step-time">@m.EventTime.ToString("dd MMMM yyyy, hh:mm tt")</div>
+                                        <span class="badge bg-light text-secondary border small">@m.StatusCategory.ToString()</span>
+                                    </div>
+                                    <h4 class="step-headline">@m.StatusHeadline</h4>
+                                    <div class="step-location">
+                                        <i class="bi bi-geo-alt"></i> @m.FacilityLocation
+                                    </div>
+                                    <p class="step-details">@m.DetailedDescription</p>
+                                    @if (!string.IsNullOrEmpty(m.PerformedBy))
+                                    {
+                                        <div class="text-muted small mt-1">
+                                            <i class="bi bi-person-badge me-1"></i>Verified by: <strong>@m.PerformedBy</strong>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

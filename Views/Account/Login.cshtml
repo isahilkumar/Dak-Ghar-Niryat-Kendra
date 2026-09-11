@@ -1,0 +1,251 @@
+@model DakGharNiryatKendra.Models.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Sign In";
+    Layout = "_Layout";
+}
+
+<div class="auth-page-wrapper">
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-80">
+            <div class="col-xl-10 col-lg-11">
+                <div class="auth-container">
+                    <div class="row g-0">
+                        <!-- Left Panel: Branding & Features -->
+                        <div class="col-lg-5 d-none d-lg-block">
+                            <div class="auth-brand-panel">
+                                <div class="auth-brand-content">
+                                    <div class="auth-brand-logo">
+                                        <img src="/images/dak_ghar_logo.svg" alt="Dak Ghar Niryat Kendra Emblem" style="width: 54px; height: 54px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));" />
+                                        <div>
+                                            <span class="brand-text-main text-white" style="font-size:1.3rem;">Dak Ghar Niryat Kendra</span>
+                                            <span class="brand-text-sub d-block text-white-50" style="font-size:0.68rem;">India Post Export Portal</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <h2 class="auth-brand-title">
+                                        Export to the World<br/>
+                                        <span class="highlight-gold">from your Doorstep</span>
+                                    </h2>
+                                    <p class="auth-brand-desc">
+                                        India Post's digital export ecosystem empowering MSMEs, artisans, weavers, and self-help groups to reach international markets seamlessly.
+                                    </p>
+
+                                    <div class="auth-features">
+                                        <div class="auth-feature-item">
+                                            <div class="auth-feature-icon">
+                                                <i class="bi bi-globe-americas"></i>
+                                            </div>
+                                            <div>
+                                                <strong>190+ Countries</strong>
+                                                <span>Ship globally via UPU network</span>
+                                            </div>
+                                        </div>
+                                        <div class="auth-feature-item">
+                                            <div class="auth-feature-icon">
+                                                <i class="bi bi-shield-lock"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Secure e-PBE</strong>
+                                                <span>Digital postal bill of export</span>
+                                            </div>
+                                        </div>
+                                        <div class="auth-feature-item">
+                                            <div class="auth-feature-icon">
+                                                <i class="bi bi-truck"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Free Doorstep Pickup</strong>
+                                                <span>Scheduled collection service</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="auth-brand-badges">
+                                        <span class="auth-brand-badge">
+                                            <i class="bi bi-lock-fill"></i> 256-Bit SSL
+                                        </span>
+                                        <span class="auth-brand-badge">
+                                            <i class="bi bi-patch-check-fill"></i> ISO 27001
+                                        </span>
+                                        <span class="auth-brand-badge">
+                                            <i class="bi bi-globe"></i> UPU S10
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Decorative elements -->
+                                <div class="auth-brand-pattern"></div>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Login Form -->
+                        <div class="col-lg-7">
+                            <div class="auth-form-panel">
+                                <!-- Mobile brand header -->
+                                <div class="d-lg-none text-center mb-4">
+                                    <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
+                                        <div class="emblem-box" style="width:40px; height:40px; font-size:1.1rem;">
+                                            <i class="bi bi-send-fill"></i>
+                                        </div>
+                                        <span class="brand-text-main" style="font-size:1.1rem;">Dak Ghar Niryat Kendra</span>
+                                    </div>
+                                </div>
+
+                                <div class="auth-form-header">
+                                    <span class="auth-form-badge">
+                                        <i class="bi bi-person-check-fill"></i> Secure Login
+                                    </span>
+                                    <h1 class="auth-form-title">Welcome Back</h1>
+                                    <p class="auth-form-subtitle">Sign in to your account to manage exports, track shipments, and access your portal.</p>
+                                </div>
+
+                                <!-- Global error display -->
+                                @if (!ViewData.ModelState.IsValid && ViewData.ModelState[""]?.Errors.Count > 0)
+                                {
+                                    <div class="auth-error-banner" id="loginErrorBanner">
+                                        <i class="bi bi-exclamation-octagon-fill"></i>
+                                        <span>@ViewData.ModelState[""]!.Errors[0].ErrorMessage</span>
+                                    </div>
+                                }
+
+                                <form asp-controller="Account" asp-action="Login" method="post" id="loginForm" novalidate>
+                                    <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+                                    <div class="auth-input-group">
+                                        <label class="auth-label" for="UsernameOrEmail">
+                                            <i class="bi bi-person"></i> Username or Email
+                                        </label>
+                                        <div class="auth-input-wrapper">
+                                            <i class="bi bi-at auth-input-icon"></i>
+                                            <input asp-for="UsernameOrEmail" 
+                                                   class="auth-input" 
+                                                   id="UsernameOrEmail"
+                                                   placeholder="e.g. exporter1 or you@business.in"
+                                                   autocomplete="username"
+                                                   autofocus />
+                                        </div>
+                                        <span asp-validation-for="UsernameOrEmail" class="auth-validation-msg"></span>
+                                    </div>
+
+                                    <div class="auth-input-group">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <label class="auth-label" for="Password">
+                                                <i class="bi bi-lock"></i> Password
+                                            </label>
+                                            <a href="#" class="auth-forgot-link" tabindex="-1">Forgot password?</a>
+                                        </div>
+                                        <div class="auth-input-wrapper">
+                                            <i class="bi bi-key auth-input-icon"></i>
+                                            <input asp-for="Password" 
+                                                   class="auth-input" 
+                                                   id="Password"
+                                                   type="password"
+                                                   placeholder="Enter your password"
+                                                   autocomplete="current-password" />
+                                            <button type="button" class="auth-toggle-password" onclick="togglePasswordVisibility('Password', this)" tabindex="-1">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                        <span asp-validation-for="Password" class="auth-validation-msg"></span>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                        <div class="form-check">
+                                            <input asp-for="RememberMe" class="form-check-input" type="checkbox" id="RememberMe" />
+                                            <label class="form-check-label small text-muted fw-medium" for="RememberMe">
+                                                Remember me on this device
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-dnk-primary w-100 py-3 fw-bold auth-submit-btn" id="loginSubmitBtn">
+                                        <span class="auth-btn-text">
+                                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Portal
+                                        </span>
+                                        <span class="auth-btn-loader d-none">
+                                            <span class="spinner-border spinner-border-sm me-2"></span> Authenticating...
+                                        </span>
+                                    </button>
+                                </form>
+
+                                <!-- Demo Quick Access -->
+                                <div class="auth-divider">
+                                    <span>or quick access with demo personas</span>
+                                </div>
+
+                                <div class="auth-demo-grid">
+                                    <a href="/Account/SwitchUser?username=exporter1" class="auth-demo-chip auth-demo-exporter" title="Login as MSME Exporter">
+                                        <i class="bi bi-shop"></i>
+                                        <span>Exporter</span>
+                                    </a>
+                                    <a href="/Account/SwitchUser?username=postal_staff" class="auth-demo-chip auth-demo-postal" title="Login as DNK Staff">
+                                        <i class="bi bi-envelope-paper"></i>
+                                        <span>DNK Staff</span>
+                                    </a>
+                                    <a href="/Account/SwitchUser?username=customs_officer" class="auth-demo-chip auth-demo-customs" title="Login as Customs Officer">
+                                        <i class="bi bi-shield-check"></i>
+                                        <span>Customs</span>
+                                    </a>
+                                    <a href="/Account/SwitchUser?username=admin" class="auth-demo-chip auth-demo-admin" title="Login as Admin">
+                                        <i class="bi bi-gear"></i>
+                                        <span>Admin</span>
+                                    </a>
+                                </div>
+
+                                <!-- Register Link -->
+                                <div class="auth-footer-link">
+                                    <span>New to the portal?</span>
+                                    <a asp-controller="Account" asp-action="Register">
+                                        <i class="bi bi-person-plus me-1"></i>Create an MSME Exporter Account
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Toggle password visibility
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'bi bi-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'bi bi-eye';
+            }
+        }
+
+        // Submit button loading state
+        document.getElementById('loginForm')?.addEventListener('submit', function(e) {
+            const btn = document.getElementById('loginSubmitBtn');
+            const btnText = btn.querySelector('.auth-btn-text');
+            const btnLoader = btn.querySelector('.auth-btn-loader');
+            
+            // Only show loader if form is valid
+            if (this.checkValidity()) {
+                btnText.classList.add('d-none');
+                btnLoader.classList.remove('d-none');
+                btn.disabled = true;
+            }
+        });
+
+        // Floating label effect
+        document.querySelectorAll('.auth-input').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.closest('.auth-input-wrapper').classList.add('focused');
+            });
+            input.addEventListener('blur', () => {
+                input.closest('.auth-input-wrapper').classList.remove('focused');
+            });
+        });
+    </script>
+}
