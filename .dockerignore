@@ -1,0 +1,11 @@
+**/.git
+**/.vs
+**/bin
+**/obj
+**/*.db
+**/*.db-shm
+**/*.db-wal
+Dockerfile
+.dockerignore
+render.yaml
+README.md
