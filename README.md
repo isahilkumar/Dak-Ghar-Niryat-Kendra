@@ -9,11 +9,12 @@
 [![ASP.NET Core MVC](https://img.shields.io/badge/ASP.NET_Core_MVC-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://docs.microsoft.com/aspnet/core/mvc)
 [![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org/)
 [![Bootstrap 5](https://img.shields.io/badge/Bootstrap_5.3-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com/)
+[![Render Live](https://img.shields.io/badge/Render-Live_Demo-46E3B7?style=for-the-badge&logo=render&logoColor=black)](https://dak-ghar-niryat-kendra.onrender.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 > **Empowering Indian MSMEs, artisans and e-commerce exporters to ship globally — 100% paperless, zero-rated IGST, automated customs clearance.**
 
-[🚀 Live Demo](#-quick-start) · [📖 Docs](#-architecture-overview) · [🐛 Issues](https://github.com/isahilkumar/Dak-Ghar-Niryat-Kendra/issues) · [⭐ Star this repo](#)
+[🚀 Live Demo](https://dak-ghar-niryat-kendra.onrender.com) · [📖 Docs](#-architecture-overview) · [🐛 Issues](https://github.com/isahilkumar/Dak-Ghar-Niryat-Kendra/issues) · [⭐ Star this repo](#)
 
 ---
 
@@ -25,7 +26,8 @@
 - [🎯 Key Features](#-key-features)
 - [🏗️ Tech Stack](#️-tech-stack)
 - [🗂️ Project Structure](#️-project-structure)
-- [🚀 Quick Start](#-quick-start)
+- [🌐 Live Demo](#-live-demo)
+- [🚀 Quick Start (Local Setup)](#-quick-start-local-setup)
 - [👥 Demo Roles & Portals](#-demo-roles--portals)
 - [📦 Postal Services Supported](#-postal-services-supported)
 - [🌍 Destination Countries](#-destination-countries)
@@ -183,7 +185,19 @@ Dak Ghar Niryat Kendra/
 
 ---
 
-## 🚀 Quick Start
+## 🌐 Live Demo
+
+The application is deployed and running live on **Render**:
+
+### 🔗 **[https://dak-ghar-niryat-kendra.onrender.com](https://dak-ghar-niryat-kendra.onrender.com)**
+
+> ⚡ **Quick Test**: Visit the link above to explore the portal directly. Use the top persona switcher or the [Demo Roles](#-demo-roles--portals) links to experience all 4 stakeholder views (Exporter, Postal Staff, Customs, and Admin).
+>
+> *(Note: Free tier instances on Render automatically spin down during inactivity and wake up in ~30–50s on the first request).*
+
+---
+
+## 🚀 Quick Start (Local Setup)
 
 ### Prerequisites
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
